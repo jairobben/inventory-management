@@ -1,42 +1,77 @@
 <template>
-  <div class="app">
-    <header class="top-nav">
-      <div class="nav-container">
+  <div class="app" :class="{ 'sidebar-collapsed': isCollapsed, 'sidebar-hidden': isMobileHidden }">
+
+    <!-- Mobile hamburger -->
+    <button class="hamburger-btn" @click="openMobileSidebar" aria-label="Open navigation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" :class="{ visible: isMobileOpen }" @click="closeMobileSidebar"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" :class="{ 'mobile-open': isMobileOpen }">
+
+      <!-- Sidebar header: logo -->
+      <div class="sidebar-header">
         <div class="logo">
-          <h1>{{ t('nav.companyName') }}</h1>
-          <span class="subtitle">{{ t('nav.subtitle') }}</span>
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <path d="M8 21h8M12 17v4" />
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-name">{{ t('nav.companyName') }}</span>
+            <span class="logo-subtitle">{{ t('nav.subtitle') }}</span>
+          </div>
         </div>
-        <nav class="nav-tabs">
-          <router-link to="/" :class="{ active: $route.path === '/' }">
-            {{ t('nav.overview') }}
-          </router-link>
-          <router-link to="/inventory" :class="{ active: $route.path === '/inventory' }">
-            {{ t('nav.inventory') }}
-          </router-link>
-          <router-link to="/orders" :class="{ active: $route.path === '/orders' }">
-            {{ t('nav.orders') }}
-          </router-link>
-          <router-link to="/spending" :class="{ active: $route.path === '/spending' }">
-            {{ t('nav.finance') }}
-          </router-link>
-          <router-link to="/demand" :class="{ active: $route.path === '/demand' }">
-            {{ t('nav.demandForecast') }}
-          </router-link>
-          <router-link to="/reports" :class="{ active: $route.path === '/reports' }">
-            Reports
-          </router-link>
-        </nav>
-        <LanguageSwitcher />
+        <button class="toggle-btn" @click="toggleSidebar" :aria-label="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline v-if="!isCollapsed" points="15 18 9 12 15 6" />
+            <polyline v-else points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation links -->
+      <nav class="sidebar-nav">
+        <router-link
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          :class="{ active: isActive(item.to) }"
+          :title="isCollapsed ? item.label : ''"
+          @click="closeMobileSidebar"
+        >
+          <span class="nav-icon" v-html="item.icon"></span>
+          <span class="nav-label">{{ item.label }}</span>
+        </router-link>
+      </nav>
+
+      <!-- Sidebar footer: language + profile -->
+      <div class="sidebar-footer">
+        <div class="footer-controls">
+          <LanguageSwitcher />
+        </div>
         <ProfileMenu
           @show-profile-details="showProfileDetails = true"
           @show-tasks="showTasks = true"
         />
       </div>
-    </header>
-    <FilterBar />
-    <main class="main-content">
-      <router-view />
-    </main>
+    </aside>
+
+    <!-- Main area -->
+    <div class="main-area">
+      <FilterBar />
+      <main class="main-content">
+        <router-view />
+      </main>
+    </div>
 
     <ProfileDetailsModal
       :is-open="showProfileDetails"
@@ -55,7 +90,8 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { api } from './api'
 import { useAuth } from './composables/useAuth'
 import { useI18n } from './composables/useI18n'
@@ -64,6 +100,16 @@ import ProfileMenu from './components/ProfileMenu.vue'
 import ProfileDetailsModal from './components/ProfileDetailsModal.vue'
 import TasksModal from './components/TasksModal.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+
+const STORAGE_KEY = 'sidebar_collapsed'
+
+const ICON_OVERVIEW = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`
+const ICON_INVENTORY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`
+const ICON_ORDERS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>`
+const ICON_FINANCE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`
+const ICON_DEMAND = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`
+const ICON_REPORTS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`
+const ICON_RESTOCKING = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>`
 
 export default {
   name: 'App',
@@ -75,16 +121,69 @@ export default {
     LanguageSwitcher
   },
   setup() {
+    const route = useRoute()
     const { currentUser } = useAuth()
     const { t } = useI18n()
     const showProfileDetails = ref(false)
     const showTasks = ref(false)
     const apiTasks = ref([])
 
-    // Merge mock tasks from currentUser with API tasks
-    const tasks = computed(() => {
-      return [...currentUser.value.tasks, ...apiTasks.value]
-    })
+    // Sidebar state
+    const savedCollapsed = localStorage.getItem(STORAGE_KEY)
+    const isMobile = () => window.innerWidth < 768
+    const isTablet = () => window.innerWidth < 1024
+
+    // Default: collapsed on < 1024px, expanded on >= 1024px
+    const isCollapsed = ref(
+      savedCollapsed !== null
+        ? savedCollapsed === 'true'
+        : isTablet()
+    )
+    const isMobileHidden = ref(isMobile())
+    const isMobileOpen = ref(false)
+
+    const toggleSidebar = () => {
+      isCollapsed.value = !isCollapsed.value
+      localStorage.setItem(STORAGE_KEY, String(isCollapsed.value))
+    }
+
+    const openMobileSidebar = () => {
+      isMobileOpen.value = true
+    }
+
+    const closeMobileSidebar = () => {
+      isMobileOpen.value = false
+    }
+
+    const handleResize = () => {
+      const mobile = isMobile()
+      isMobileHidden.value = mobile
+      if (!mobile && isMobileOpen.value) {
+        isMobileOpen.value = false
+      }
+    }
+
+    onMounted(() => window.addEventListener('resize', handleResize))
+    onUnmounted(() => window.removeEventListener('resize', handleResize))
+
+    const navItems = computed(() => [
+      { to: '/',           label: t('nav.overview'),        icon: ICON_OVERVIEW   },
+      { to: '/inventory',  label: t('nav.inventory'),       icon: ICON_INVENTORY  },
+      { to: '/orders',     label: t('nav.orders'),          icon: ICON_ORDERS     },
+      { to: '/spending',   label: t('nav.finance'),         icon: ICON_FINANCE    },
+      { to: '/demand',     label: t('nav.demandForecast'),  icon: ICON_DEMAND     },
+      { to: '/reports',    label: 'Reports',                icon: ICON_REPORTS    },
+      { to: '/restocking', label: 'Restocking',             icon: ICON_RESTOCKING },
+    ])
+
+    // Exact match for root, prefix match for others
+    const isActive = (path) => {
+      if (path === '/') return route.path === '/'
+      return route.path.startsWith(path)
+    }
+
+    // Tasks
+    const tasks = computed(() => [...currentUser.value.tasks, ...apiTasks.value])
 
     const loadTasks = async () => {
       try {
@@ -97,7 +196,6 @@ export default {
     const addTask = async (taskData) => {
       try {
         const newTask = await api.createTask(taskData)
-        // Add new task to the beginning of the array
         apiTasks.value.unshift(newTask)
       } catch (err) {
         console.error('Failed to add task:', err)
@@ -106,17 +204,11 @@ export default {
 
     const deleteTask = async (taskId) => {
       try {
-        // Check if it's a mock task (from currentUser)
         const isMockTask = currentUser.value.tasks.some(t => t.id === taskId)
-
         if (isMockTask) {
-          // Remove from mock tasks
           const index = currentUser.value.tasks.findIndex(t => t.id === taskId)
-          if (index !== -1) {
-            currentUser.value.tasks.splice(index, 1)
-          }
+          if (index !== -1) currentUser.value.tasks.splice(index, 1)
         } else {
-          // Remove from API tasks
           await api.deleteTask(taskId)
           apiTasks.value = apiTasks.value.filter(t => t.id !== taskId)
         }
@@ -127,19 +219,13 @@ export default {
 
     const toggleTask = async (taskId) => {
       try {
-        // Check if it's a mock task (from currentUser)
         const mockTask = currentUser.value.tasks.find(t => t.id === taskId)
-
         if (mockTask) {
-          // Toggle mock task status
           mockTask.status = mockTask.status === 'pending' ? 'completed' : 'pending'
         } else {
-          // Toggle API task
           const updatedTask = await api.toggleTask(taskId)
           const index = apiTasks.value.findIndex(t => t.id === taskId)
-          if (index !== -1) {
-            apiTasks.value[index] = updatedTask
-          }
+          if (index !== -1) apiTasks.value[index] = updatedTask
         }
       } catch (err) {
         console.error('Failed to toggle task:', err)
@@ -150,6 +236,14 @@ export default {
 
     return {
       t,
+      isCollapsed,
+      isMobileHidden,
+      isMobileOpen,
+      toggleSidebar,
+      openMobileSidebar,
+      closeMobileSidebar,
+      navItems,
+      isActive,
       showProfileDetails,
       showTasks,
       tasks,
@@ -162,6 +256,7 @@ export default {
 </script>
 
 <style>
+/* ── Reset ─────────────────────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -176,103 +271,319 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── App layout ─────────────────────────────────────────────── */
 .app {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
 }
 
-.top-nav {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-  position: sticky;
+/* ── Sidebar ────────────────────────────────────────────────── */
+.sidebar {
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  height: 100vh;
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  transition: width 0.22s ease, transform 0.22s ease;
+  overflow: hidden;
 }
 
-.nav-container {
-  max-width: 1600px;
-  margin: 0 auto;
+.app.sidebar-collapsed .sidebar {
+  width: 64px;
+}
+
+/* ── Sidebar header ──────────────────────────────────────────── */
+.sidebar-header {
   display: flex;
   align-items: center;
-  padding: 0 2rem;
-  height: 70px;
-}
-
-.nav-container > .nav-tabs {
-  margin-left: auto;
-  margin-right: 1rem;
-}
-
-.nav-container > .language-switcher {
-  margin-right: 1rem;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  height: 64px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
 }
 
 .logo {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.625rem;
+  overflow: hidden;
 }
 
-.logo h1 {
-  font-size: 1.375rem;
+.logo-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: #eff6ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563eb;
+}
+
+.logo-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.18s ease, width 0.22s ease;
+}
+
+.logo-name {
+  font-size: 0.9rem;
   font-weight: 700;
   color: #0f172a;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.subtitle {
-  font-size: 0.813rem;
+.logo-subtitle {
+  font-size: 0.7rem;
   color: #64748b;
-  font-weight: 400;
-  padding-left: 0.75rem;
-  border-left: 1px solid #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.nav-tabs {
+.app.sidebar-collapsed .logo-text {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+.toggle-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.nav-tabs a {
-  padding: 0.625rem 1.25rem;
+.toggle-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.toggle-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app.sidebar-collapsed .toggle-btn {
+  /* Keep toggle visible and centered when collapsed */
+  margin: 0 auto;
+}
+
+/* ── Nav links ─────────────────────────────────────────────── */
+.sidebar-nav {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.625rem;
+  border-radius: 8px;
   color: #64748b;
   text-decoration: none;
+  font-size: 0.875rem;
   font-weight: 500;
-  font-size: 0.938rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
   position: relative;
 }
 
-.nav-tabs a:hover {
-  color: #0f172a;
+.sidebar-nav a:hover {
   background: #f1f5f9;
+  color: #0f172a;
 }
 
-.nav-tabs a.active {
-  color: #2563eb;
+.sidebar-nav a.active {
   background: #eff6ff;
+  color: #2563eb;
 }
 
-.nav-tabs a.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #2563eb;
+.nav-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.18s ease, width 0.22s ease;
+}
+
+.app.sidebar-collapsed .nav-label {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+/* ── Sidebar footer ──────────────────────────────────────────── */
+.sidebar-footer {
+  border-top: 1px solid #e2e8f0;
+  padding: 0.625rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.footer-controls {
+  display: flex;
+  justify-content: center;
+}
+
+.app.sidebar-collapsed .footer-controls {
+  justify-content: center;
+}
+
+/* ── Main area ──────────────────────────────────────────────── */
+.main-area {
+  flex: 1;
+  min-width: 0;
+  margin-left: 220px;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.22s ease;
+}
+
+.app.sidebar-collapsed .main-area {
+  margin-left: 64px;
 }
 
 .main-content {
   flex: 1;
+  padding: 1.5rem 2rem;
   max-width: 1600px;
   width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem 2rem;
 }
+
+/* ── Mobile: hamburger ──────────────────────────────────────── */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 300;
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.hamburger-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Mobile: overlay ────────────────────────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  z-index: 190;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 220px !important; /* always full width when open on mobile */
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* overlay visibility controlled by .visible class bound in template */
+
+  .main-area {
+    margin-left: 0 !important;
+    padding-top: 64px; /* space for hamburger */
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet: sidebar visible but collapsed by default */
+  .app.sidebar-collapsed .sidebar {
+    width: 64px;
+  }
+
+  .app.sidebar-collapsed .main-area {
+    margin-left: 64px;
+  }
+}
+
+/* ── Tooltip for collapsed icons ──────────────────────────────── */
+.app.sidebar-collapsed .sidebar-nav a[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 400;
+}
+
+/* ── Global component styles (tables, cards, badges, etc.) ───── */
 
 .page-header {
   margin-bottom: 1.5rem;
@@ -327,21 +638,10 @@ body {
   letter-spacing: -0.025em;
 }
 
-.stat-card.warning .stat-value {
-  color: #ea580c;
-}
-
-.stat-card.success .stat-value {
-  color: #059669;
-}
-
-.stat-card.danger .stat-value {
-  color: #dc2626;
-}
-
-.stat-card.info .stat-value {
-  color: #2563eb;
-}
+.stat-card.warning .stat-value { color: #ea580c; }
+.stat-card.success .stat-value { color: #059669; }
+.stat-card.danger  .stat-value { color: #dc2626; }
+.stat-card.info    .stat-value { color: #2563eb; }
 
 .card {
   background: white;
@@ -417,55 +717,16 @@ tbody tr:hover {
   letter-spacing: 0.025em;
 }
 
-.badge.success {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.badge.warning {
-  background: #fed7aa;
-  color: #92400e;
-}
-
-.badge.danger {
-  background: #fecaca;
-  color: #991b1b;
-}
-
-.badge.info {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.badge.increasing {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.badge.decreasing {
-  background: #fecaca;
-  color: #991b1b;
-}
-
-.badge.stable {
-  background: #e0e7ff;
-  color: #3730a3;
-}
-
-.badge.high {
-  background: #fecaca;
-  color: #991b1b;
-}
-
-.badge.medium {
-  background: #fed7aa;
-  color: #92400e;
-}
-
-.badge.low {
-  background: #dbeafe;
-  color: #1e40af;
-}
+.badge.success    { background: #d1fae5; color: #065f46; }
+.badge.warning    { background: #fed7aa; color: #92400e; }
+.badge.danger     { background: #fecaca; color: #991b1b; }
+.badge.info       { background: #dbeafe; color: #1e40af; }
+.badge.increasing { background: #d1fae5; color: #065f46; }
+.badge.decreasing { background: #fecaca; color: #991b1b; }
+.badge.stable     { background: #e0e7ff; color: #3730a3; }
+.badge.high       { background: #fecaca; color: #991b1b; }
+.badge.medium     { background: #fed7aa; color: #92400e; }
+.badge.low        { background: #dbeafe; color: #1e40af; }
 
 .loading {
   text-align: center;

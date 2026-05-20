@@ -27,6 +27,47 @@
         </div>
       </div>
 
+      <div class="card" ref="restockingSection">
+        <div class="card-header">
+          <h3 class="card-title">Submitted Restocking Orders</h3>
+        </div>
+        <div v-if="restockingLoading" class="loading">Loading restocking orders...</div>
+        <div v-else-if="restockingError" class="error">{{ restockingError }}</div>
+        <div v-else-if="restockingOrders.length === 0" class="empty-restocking">
+          No restocking orders submitted yet.
+        </div>
+        <div v-else class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Order Number</th>
+                <th>Items</th>
+                <th class="col-value">Total Value</th>
+                <th>Status</th>
+                <th class="col-date">Order Date</th>
+                <th class="col-date">Expected Delivery</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="rOrder in restockingOrders" :key="rOrder.id">
+                <td><strong>{{ rOrder.order_number }}</strong></td>
+                <td class="col-items-text">
+                  {{ rOrder.items.map(i => `${i.name} x${i.quantity}`).join(', ') }}
+                </td>
+                <td class="col-value">
+                  <strong>{{ rOrder.total_value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }) }}</strong>
+                </td>
+                <td>
+                  <span class="badge info">{{ rOrder.status }}</span>
+                </td>
+                <td class="col-date">{{ formatRestockingDate(rOrder.order_date) }}</td>
+                <td class="col-date">{{ formatRestockingDate(rOrder.expected_delivery) }} (7 business days)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">{{ t('orders.allOrders') }} ({{ orders.length }})</h3>
@@ -96,6 +137,10 @@ export default {
     const error = ref(null)
     const orders = ref([])
 
+    const restockingOrders = ref([])
+    const restockingLoading = ref(false)
+    const restockingError = ref(null)
+
     // Use shared filters
     const {
       selectedPeriod,
@@ -153,16 +198,42 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    const formatRestockingDate = (dateString) => {
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) return dateString
+      return date.toISOString().slice(0, 10)
+    }
+
+    const loadRestockingOrders = async () => {
+      restockingLoading.value = true
+      restockingError.value = null
+      try {
+        restockingOrders.value = await api.getRestockingOrders()
+      } catch (err) {
+        restockingError.value = 'Failed to load restocking orders: ' + err.message
+        console.error(err)
+      } finally {
+        restockingLoading.value = false
+      }
+    }
+
+    onMounted(() => {
+      loadOrders()
+      loadRestockingOrders()
+    })
 
     return {
       t,
       loading,
       error,
       orders,
+      restockingOrders,
+      restockingLoading,
+      restockingError,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
+      formatRestockingDate,
       currencySymbol,
       translateProductName,
       translateCustomerName
@@ -172,6 +243,22 @@ export default {
 </script>
 
 <style scoped>
+.empty-restocking {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 0.938rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.col-items-text {
+  max-width: 360px;
+  white-space: normal;
+  color: #334155;
+  font-size: 0.813rem;
+}
+
 /* Fixed table layout to prevent column shifting */
 .orders-table {
   table-layout: fixed;
