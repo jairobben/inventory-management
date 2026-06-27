@@ -769,6 +769,143 @@
       margin: 24px 0;
     }
 
+    /* ── PHASE TABS ── */
+    .phase-tab-nav {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .phase-tab-nav::-webkit-scrollbar { display: none; }
+
+    .phase-tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 20px 12px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-family: var(--font);
+      white-space: nowrap;
+      position: relative;
+      bottom: -1px;
+      transition: color 0.15s;
+    }
+    .phase-tab-btn:hover { color: var(--text); }
+    .phase-tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .phase-tab-icon {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+    .phase-tab-btn.active .phase-tab-icon { color: var(--accent); opacity: 0.6; }
+
+    .phase-tab-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .phase-tab-count {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 1px 7px;
+      border-radius: 10px;
+      color: var(--text-dim);
+    }
+    .phase-tab-btn.active .phase-tab-count {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .phase-panel { display: none; }
+    .phase-panel.active { display: block; }
+
+    .phase-agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 10px;
+    }
+
+    .phase-agent-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      transition: border-color 0.15s;
+    }
+    .phase-agent-card:hover { border-color: rgba(88,166,255,0.4); }
+
+    .phase-agent-name {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .phase-agent-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .phase-group { margin-bottom: 32px; }
+
+    .phase-group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .phase-group-pill {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .phase-group-pill.blue  { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+    .phase-group-pill.red   { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+    .phase-note {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: rgba(31,58,95,0.25);
+      border: 1px solid rgba(88,166,255,0.15);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #7da8d4;
+      line-height: 1.6;
+    }
+    .phase-note strong { color: var(--accent); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .sidebar { display: none; }
@@ -789,6 +926,14 @@
       <div class="sidebar-title">Centro de Aprendizaje</div>
       <div class="sidebar-subtitle">Arquitecturas Agenticas</div>
       <div class="sidebar-source">Basado en github.com/affaan-m/ECC</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Proceso E2E</div>
+      <a class="nav-item" href="#proceso-e2e">
+        <span class="nav-num">→</span> Los 67 Agentes
+        <span class="nav-badge badge-wip">nuevo</span>
+      </a>
     </div>
 
     <div class="nav-section">
@@ -908,6 +1053,452 @@
     </section>
 
     <div class="content">
+
+      <!-- ════════════════════════════════════════
+           PROCESO E2E — LOS 67 AGENTES
+      ═════════════════════════════════════════ -->
+      <section class="concept" id="proceso-e2e">
+        <div class="concept-header">
+          <div class="concept-number" style="font-size:11px;padding:6px 8px;">E2E</div>
+          <div class="concept-title-block">
+            <h2>El Proceso de Punta a Punta</h2>
+            <div class="concept-subtitle">Los 67 agentes de ECC organizados por fase del ciclo de desarrollo</div>
+          </div>
+        </div>
+
+        <div class="concept-body" style="max-width:none">
+
+          <!-- TAB NAV -->
+          <div class="phase-tab-nav">
+            <button class="phase-tab-btn active" data-phase="meta">
+              <span class="phase-tab-icon">∞</span>
+              <span class="phase-tab-label">Meta</span>
+              <span class="phase-tab-count">8</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="discovery">
+              <span class="phase-tab-icon">01</span>
+              <span class="phase-tab-label">Discovery</span>
+              <span class="phase-tab-count">5</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="arquitectura">
+              <span class="phase-tab-icon">02</span>
+              <span class="phase-tab-label">Arquitectura</span>
+              <span class="phase-tab-count">7</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="implementacion">
+              <span class="phase-tab-icon">03</span>
+              <span class="phase-tab-label">Implementación</span>
+              <span class="phase-tab-count">1</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="lenguaje">
+              <span class="phase-tab-icon">04</span>
+              <span class="phase-tab-label">Lenguaje</span>
+              <span class="phase-tab-count">30</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="calidad">
+              <span class="phase-tab-icon">05</span>
+              <span class="phase-tab-label">Calidad</span>
+              <span class="phase-tab-count">7</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="testing">
+              <span class="phase-tab-icon">06</span>
+              <span class="phase-tab-label">Testing</span>
+              <span class="phase-tab-count">1</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="docs">
+              <span class="phase-tab-icon">07</span>
+              <span class="phase-tab-label">Docs</span>
+              <span class="phase-tab-count">1</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="distribucion">
+              <span class="phase-tab-icon">08</span>
+              <span class="phase-tab-label">Distribución</span>
+              <span class="phase-tab-count">3</span>
+            </button>
+            <button class="phase-tab-btn" data-phase="growth">
+              <span class="phase-tab-icon">09</span>
+              <span class="phase-tab-label">Growth</span>
+              <span class="phase-tab-count">4</span>
+            </button>
+          </div>
+
+          <!-- ── PANEL: META ── -->
+          <div class="phase-panel active" id="phase-meta">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">chief-of-staff</div>
+                <div class="phase-agent-desc">Orquesta y distribuye trabajo entre agentes. El director de orquesta del sistema.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">planner</div>
+                <div class="phase-agent-desc">Divide tareas complejas en fases antes de ejecutar cualquier cosa.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">harness-optimizer</div>
+                <div class="phase-agent-desc">Afina y mejora el propio sistema de agentes. Meta-agente que optimiza el harness.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">loop-operator</div>
+                <div class="phase-agent-desc">Ejecuta bucles autónomos sin intervención humana hasta completar la tarea.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">agent-evaluator</div>
+                <div class="phase-agent-desc">Evalúa la calidad y rendimiento de otros agentes. Meta-evaluación del sistema.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">gan-planner</div>
+                <div class="phase-agent-desc">Planifica mediante un proceso adversarial: genera hipótesis y las somete a crítica antes de decidir.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">gan-generator</div>
+                <div class="phase-agent-desc">Genera soluciones dentro del ciclo adversarial para que el evaluador las critique.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">gan-evaluator</div>
+                <div class="phase-agent-desc">Critica activamente las salidas del generador buscando fallos antes de aprobar.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              <strong>Patrón clave:</strong> estos agentes no tocan código directamente. Coordinan, planifican, evalúan y mejoran el sistema. Son la capa de gobernanza sobre el resto del flujo.
+            </div>
+          </div>
+
+          <!-- ── PANEL: DISCOVERY ── -->
+          <div class="phase-panel" id="phase-discovery">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">code-explorer</div>
+                <div class="phase-agent-desc">Explora el codebase para entender su estructura y contexto antes de actuar.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">docs-lookup</div>
+                <div class="phase-agent-desc">Busca y recupera documentación existente relevante para la tarea en curso.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">spec-miner</div>
+                <div class="phase-agent-desc">Extrae especificaciones implícitas de código que ya existe. TDD al revés: del código a la spec.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">comment-analyzer</div>
+                <div class="phase-agent-desc">Infiere intenciones del autor leyendo comentarios del código. Rescata el "por qué" enterrado.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">conversation-analyzer</div>
+                <div class="phase-agent-desc">Extrae requisitos de conversaciones, issues y tickets. Convierte lenguaje informal en especificación.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              <strong>La fase más infravalorada.</strong> Actuar sin discovery es la causa número uno de trabajo rehecho. <strong>spec-miner</strong> es especialmente potente en codebases legacy: extrae lo que el sistema realmente hace, que puede diferir mucho del README.
+            </div>
+          </div>
+
+          <!-- ── PANEL: ARQUITECTURA ── -->
+          <div class="phase-panel" id="phase-arquitectura">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">architect</div>
+                <div class="phase-agent-desc">Decisiones de diseño de sistema de alto nivel: componentes, límites, trade-offs.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">code-architect</div>
+                <div class="phase-agent-desc">Estructura interna del código: módulos, capas, patrones de diseño, separación de responsabilidades.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">type-design-analyzer</div>
+                <div class="phase-agent-desc">Analiza y diseña el sistema de tipos. Crítico en TypeScript, Rust, F# donde los tipos son arquitectura.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">database-reviewer</div>
+                <div class="phase-agent-desc">Esquema de datos, relaciones, índices e integridad. Se revisa en diseño, no en producción.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">a11y-architect</div>
+                <div class="phase-agent-desc">Arquitectura de accesibilidad. Se decide aquí, en diseño — retrofitting es 10x más caro.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">homelab-architect</div>
+                <div class="phase-agent-desc">Diseño de infraestructura self-hosted: servidores propios, networking local, servicios internos.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">network-architect</div>
+                <div class="phase-agent-desc">Topología de red, protocolos, segmentación y diseño de conectividad del sistema.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              <strong>Distinción entre architect y code-architect:</strong> <strong>architect</strong> decide qué servicios existen y cómo se comunican. <strong>code-architect</strong> decide cómo está organizado el código dentro de cada servicio.
+            </div>
+          </div>
+
+          <!-- ── PANEL: IMPLEMENTACIÓN ── -->
+          <div class="phase-panel" id="phase-implementacion">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">tdd-guide</div>
+                <div class="phase-agent-desc">Guía el ciclo red-green-refactor. Escribe el test primero, implementa lo mínimo, refactoriza sin romper.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              Solo un agente aquí, pero es deliberado: <strong>la implementación la hace el modelo directamente</strong>, guiado por tdd-guide. El conocimiento específico de cómo implementar bien en cada lenguaje vive en los revisores de la fase 04 — que actúan como guías durante la escritura, no solo como revisores post-hoc.
+            </div>
+          </div>
+
+          <!-- ── PANEL: LENGUAJE ── -->
+          <div class="phase-panel" id="phase-lenguaje">
+
+            <div class="phase-group">
+              <div class="phase-group-header">
+                <span class="phase-group-title">Revisores de Código</span>
+                <span class="phase-group-pill blue">18 agentes — antes del merge</span>
+              </div>
+              <div class="phase-agents-grid">
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">typescript-reviewer</div>
+                  <div class="phase-agent-desc">Idioms, tipos avanzados, narrowing y convenciones TypeScript.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">python-reviewer</div>
+                  <div class="phase-agent-desc">PEP 8, pythonic patterns, type hints y convenciones del ecosistema.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">go-reviewer</div>
+                  <div class="phase-agent-desc">Concurrencia, interfaces implícitas, manejo de errores y patrones Go.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">java-reviewer</div>
+                  <div class="phase-agent-desc">Patrones OOP, Spring conventions, generics y buenas prácticas Java moderno.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">kotlin-reviewer</div>
+                  <div class="phase-agent-desc">Coroutines, extension functions, data classes y patrones Android/Kotlin.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">rust-reviewer</div>
+                  <div class="phase-agent-desc">Ownership, lifetimes, borrow checker y seguridad de memoria sin GC.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">cpp-reviewer</div>
+                  <div class="phase-agent-desc">Core Guidelines, RAII, smart pointers y patrones C++ moderno.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">csharp-reviewer</div>
+                  <div class="phase-agent-desc">LINQ, async/await, nullable reference types y patrones .NET.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">fsharp-reviewer</div>
+                  <div class="phase-agent-desc">Programación funcional, discriminated unions y patrones F# en el ecosistema .NET.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">swift-reviewer</div>
+                  <div class="phase-agent-desc">Optionals, protocols, Swift concurrency y patrones iOS/macOS.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">flutter-reviewer</div>
+                  <div class="phase-agent-desc">Widget tree, gestión de estado y patrones Flutter/Dart para mobile.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">php-reviewer</div>
+                  <div class="phase-agent-desc">PSR standards, seguridad web y patrones PHP moderno (8.x).</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">react-reviewer</div>
+                  <div class="phase-agent-desc">Hooks, composición de componentes, gestión de efectos y patrones React.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">vue-reviewer</div>
+                  <div class="phase-agent-desc">Composition API, reactivity system y patrones Vue 3.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">django-reviewer</div>
+                  <div class="phase-agent-desc">ORM, class-based views, seguridad y patrones Django.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">fastapi-reviewer</div>
+                  <div class="phase-agent-desc">Pydantic models, dependency injection, async y patrones FastAPI.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">mle-reviewer</div>
+                  <div class="phase-agent-desc">Contratos de datos, pipelines ML, reproducibilidad y deployment de modelos.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">healthcare-reviewer</div>
+                  <div class="phase-agent-desc">Compliance HIPAA, manejo de datos de salud y patrones de seguridad en el sector sanitario.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="phase-group">
+              <div class="phase-group-header">
+                <span class="phase-group-title">Build Resolvers</span>
+                <span class="phase-group-pill red">12 agentes — cuando el CI falla</span>
+              </div>
+              <div class="phase-agents-grid">
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">build-error-resolver</div>
+                  <div class="phase-agent-desc">Diagnóstico y resolución de errores de build agnóstico de lenguaje. El generalista.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">react-build-resolver</div>
+                  <div class="phase-agent-desc">Errores de build Webpack/Vite, dependencias y configuración en proyectos React.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">go-build-resolver</div>
+                  <div class="phase-agent-desc">Errores de compilación Go, módulos y dependencias.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">java-build-resolver</div>
+                  <div class="phase-agent-desc">Errores Maven/Gradle, conflictos de dependencias y problemas de compilación Java.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">kotlin-build-resolver</div>
+                  <div class="phase-agent-desc">Errores Gradle y compilación Kotlin, incluyendo problemas de interop Java.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">rust-build-resolver</div>
+                  <div class="phase-agent-desc">Errores del borrow checker, cargo y problemas de lifetimes en compilación Rust.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">cpp-build-resolver</div>
+                  <div class="phase-agent-desc">Errores de compilación, linkado y CMake en proyectos C++.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">dart-build-resolver</div>
+                  <div class="phase-agent-desc">Errores de pub, Flutter build y problemas de plataforma Dart.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">django-build-resolver</div>
+                  <div class="phase-agent-desc">Errores de migrations, configuración WSGI y problemas de settings Django.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">swift-build-resolver</div>
+                  <div class="phase-agent-desc">Xcode build errors, Swift Package Manager y problemas de signing iOS.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">pytorch-build-resolver</div>
+                  <div class="phase-agent-desc">Errores de entorno CUDA, versiones de PyTorch y conflictos de dependencias ML.</div>
+                </div>
+                <div class="phase-agent-card">
+                  <div class="phase-agent-name">harmonyos-app-resolver</div>
+                  <div class="phase-agent-desc">Errores de build HarmonyOS y problemas de compilación ArkTS.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="phase-note">
+              <strong>La simetría más reveladora del sistema:</strong> por cada lenguaje hay un revisor (antes del merge) y un resolver (cuando el CI falla). Son dos perspectivas del mismo dominio: la del que previene y la del que repara.
+            </div>
+          </div>
+
+          <!-- ── PANEL: CALIDAD ── -->
+          <div class="phase-panel" id="phase-calidad">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">code-reviewer</div>
+                <div class="phase-agent-desc">Revisión de calidad general: legibilidad, mantenibilidad, convenciones y consistencia.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">security-reviewer</div>
+                <div class="phase-agent-desc">Vulnerabilidades, superficie de ataque, secretos expuestos y patrones inseguros.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">performance-optimizer</div>
+                <div class="phase-agent-desc">Identifica y resuelve cuellos de botella. Profiling, algoritmos y uso de recursos.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">code-simplifier</div>
+                <div class="phase-agent-desc">Reduce complejidad innecesaria y deuda cognitiva. Menos código = menos bugs.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">refactor-cleaner</div>
+                <div class="phase-agent-desc">Limpieza estructural post-feature: naming, duplicados, acoplamiento y deuda técnica.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">silent-failure-hunter</div>
+                <div class="phase-agent-desc">Detecta fallos que no producen error visible. Los más peligrosos porque no te avisan.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">pr-test-analyzer</div>
+                <div class="phase-agent-desc">Evalúa cobertura y calidad de los propios tests de una PR. Testea los tests.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              <strong>Distinciones importantes:</strong> <strong>code-reviewer</strong> revisa calidad general. <strong>code-simplifier</strong> reduce complejidad activamente. <strong>refactor-cleaner</strong> limpia deuda estructural. Tres agentes distintos porque tienen criterios de éxito distintos.
+            </div>
+          </div>
+
+          <!-- ── PANEL: TESTING ── -->
+          <div class="phase-panel" id="phase-testing">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">e2e-runner</div>
+                <div class="phase-agent-desc">Ejecuta tests de extremo a extremo del sistema completo. Valida el flujo real del usuario, no piezas aisladas.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              Un solo agente aquí, pero es el que cierra el ciclo. Los tests unitarios e integración los cubre <strong>tdd-guide</strong> en la implementación. <strong>e2e-runner</strong> valida que el sistema completo funciona como lo usaría un usuario real.
+            </div>
+          </div>
+
+          <!-- ── PANEL: DOCS ── -->
+          <div class="phase-panel" id="phase-docs">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">doc-updater</div>
+                <div class="phase-agent-desc">Actualiza documentación cuando cambia el código. Mantiene sincronizados el sistema y su descripción.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              La documentación desactualizada es peor que no tener documentación. <strong>doc-updater</strong> resuelve el problema clásico de que el código evoluciona y los docs se quedan atrás — automatizando la sincronización como parte del propio ciclo de desarrollo.
+            </div>
+          </div>
+
+          <!-- ── PANEL: DISTRIBUCIÓN ── -->
+          <div class="phase-panel" id="phase-distribucion">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">opensource-sanitizer</div>
+                <div class="phase-agent-desc">Limpia el código antes de publicarlo: elimina secretos, referencias internas y datos sensibles.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">opensource-forker</div>
+                <div class="phase-agent-desc">Gestiona el proceso de fork de proyectos de código abierto: adaptación, upstream sync y contribuciones.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">opensource-packager</div>
+                <div class="phase-agent-desc">Empaqueta para distribución pública: npm, pip, gem, cargo. Prepara el artefacto final.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              El orden importa: primero <strong>sanitizer</strong> (limpiar), luego <strong>packager</strong> (empaquetar). Publicar sin sanitizar es uno de los errores de seguridad más comunes en proyectos que pasan de privado a público.
+            </div>
+          </div>
+
+          <!-- ── PANEL: GROWTH ── -->
+          <div class="phase-panel" id="phase-growth">
+            <div class="phase-agents-grid">
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">marketing-agent</div>
+                <div class="phase-agent-desc">Materiales y estrategia de marketing del producto. Traduce capacidades técnicas a propuesta de valor.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">seo-specialist</div>
+                <div class="phase-agent-desc">Optimización para motores de búsqueda: keywords, estructura de contenido y visibilidad orgánica.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">network-troubleshooter</div>
+                <div class="phase-agent-desc">Diagnóstico de problemas de red en producción: latencia, conectividad, DNS y routing.</div>
+              </div>
+              <div class="phase-agent-card">
+                <div class="phase-agent-name">network-config-reviewer</div>
+                <div class="phase-agent-desc">Revisión de configuración de red: firewalls, balanceadores, proxies y segmentación.</div>
+              </div>
+            </div>
+            <div class="phase-note">
+              La fase más heterogénea: combina go-to-market (<strong>marketing-agent</strong>, <strong>seo-specialist</strong>) con operaciones de producción (<strong>network-troubleshooter</strong>, <strong>network-config-reviewer</strong>). Lo que tienen en común: son actividades <em>post-lanzamiento</em>.
+            </div>
+          </div>
+
+        </div>
+      </section>
 
       <!-- ════════════════════════════════════════
            CONCEPTO 1 — QUÉ ES UN AGENTIC HARNESS
@@ -2129,6 +2720,17 @@ Solo si pasan los 5 → DONE</code></pre>
 
     navItems.forEach(item => {
       item.classList.toggle('active', item.getAttribute('href') === current);
+    });
+  });
+
+  // Phase tab switching
+  document.querySelectorAll('.phase-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const phase = btn.dataset.phase;
+      document.querySelectorAll('.phase-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('phase-' + phase).classList.add('active');
     });
   });
 
