@@ -769,6 +769,139 @@
       margin: 24px 0;
     }
 
+    /* ── DOMAIN CARDS ── */
+    .domain-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+    }
+
+    .domain-cards-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .domain-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      transition: border-color 0.15s;
+    }
+    .domain-card:hover { border-color: rgba(88,166,255,0.3); }
+
+    .domain-card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .domain-card-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .domain-card-meta {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .domain-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .domain-row-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .domain-agents {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .domain-agent-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(88,166,255,0.25);
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .domain-agent-chip.resolver {
+      color: var(--red);
+      background: var(--red-dim);
+      border-color: rgba(248,81,73,0.2);
+    }
+
+    .domain-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .skill-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 5px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .skill-chip:hover { border-color: rgba(88,166,255,0.3); color: var(--text); }
+
+    .orphan-block {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+
+    .orphan-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    .orphan-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .phase-subgroup { margin-bottom: 24px; }
+
+    .phase-subgroup-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
     /* ── PHASE TABS ── */
     .phase-tab-nav {
       display: flex;
@@ -1124,40 +1257,95 @@
 
           <!-- ── PANEL: META ── -->
           <div class="phase-panel active" id="phase-meta">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">chief-of-staff</div>
-                <div class="phase-agent-desc">Orquesta y distribuye trabajo entre agentes. El director de orquesta del sistema.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Orquestación y Planificación</span>
+                  <span class="domain-card-meta">3 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">chief-of-staff</span>
+                      <span class="domain-agent-chip">planner</span>
+                      <span class="domain-agent-chip">loop-operator</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">agent-orchestration</span>
+                      <span class="skill-chip">task-decomposition</span>
+                      <span class="skill-chip">work-distribution</span>
+                      <span class="skill-chip">context-handoff</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">planner</div>
-                <div class="phase-agent-desc">Divide tareas complejas en fases antes de ejecutar cualquier cosa.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Automejoría del Sistema</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">harness-optimizer</span>
+                      <span class="domain-agent-chip">agent-evaluator</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">continuous-learning</span>
+                      <span class="skill-chip">pattern-extraction</span>
+                      <span class="skill-chip">pass-k-metrics</span>
+                      <span class="skill-chip">instinct-scoring</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">harness-optimizer</div>
-                <div class="phase-agent-desc">Afina y mejora el propio sistema de agentes. Meta-agente que optimiza el harness.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Ciclo Adversarial GAN</span>
+                  <span class="domain-card-meta">3 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">gan-planner</span>
+                      <span class="domain-agent-chip">gan-generator</span>
+                      <span class="domain-agent-chip">gan-evaluator</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">adversarial-review</span>
+                      <span class="skill-chip">hypothesis-critique</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">loop-operator</div>
-                <div class="phase-agent-desc">Ejecuta bucles autónomos sin intervención humana hasta completar la tarea.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">agent-evaluator</div>
-                <div class="phase-agent-desc">Evalúa la calidad y rendimiento de otros agentes. Meta-evaluación del sistema.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">gan-planner</div>
-                <div class="phase-agent-desc">Planifica mediante un proceso adversarial: genera hipótesis y las somete a crítica antes de decidir.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">gan-generator</div>
-                <div class="phase-agent-desc">Genera soluciones dentro del ciclo adversarial para que el evaluador las critique.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">gan-evaluator</div>
-                <div class="phase-agent-desc">Critica activamente las salidas del generador buscando fallos antes de aprobar.</div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills sin agente dedicado — ejecutadas por el modelo general</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">context-budget</span>
+                <span class="skill-chip">strategic-compact</span>
+                <span class="skill-chip">cost-tracking</span>
+                <span class="skill-chip">session-workflow</span>
               </div>
             </div>
+
             <div class="phase-note">
               <strong>Patrón clave:</strong> estos agentes no tocan código directamente. Coordinan, planifican, evalúan y mejoran el sistema. Son la capa de gobernanza sobre el resto del flujo.
             </div>
@@ -1165,28 +1353,72 @@
 
           <!-- ── PANEL: DISCOVERY ── -->
           <div class="phase-panel" id="phase-discovery">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">code-explorer</div>
-                <div class="phase-agent-desc">Explora el codebase para entender su estructura y contexto antes de actuar.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Comprensión del Codebase</span>
+                  <span class="domain-card-meta">3 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">code-explorer</span>
+                      <span class="domain-agent-chip">spec-miner</span>
+                      <span class="domain-agent-chip">comment-analyzer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">codebase-survey</span>
+                      <span class="skill-chip">dependency-mapping</span>
+                      <span class="skill-chip">architecture-discovery</span>
+                      <span class="skill-chip">spec-mining</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">docs-lookup</div>
-                <div class="phase-agent-desc">Busca y recupera documentación existente relevante para la tarea en curso.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Requisitos y Contexto</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">docs-lookup</span>
+                      <span class="domain-agent-chip">conversation-analyzer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">requirements-extraction</span>
+                      <span class="skill-chip">conversation-to-spec</span>
+                      <span class="skill-chip">documentation-lookup</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">spec-miner</div>
-                <div class="phase-agent-desc">Extrae especificaciones implícitas de código que ya existe. TDD al revés: del código a la spec.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">comment-analyzer</div>
-                <div class="phase-agent-desc">Infiere intenciones del autor leyendo comentarios del código. Rescata el "por qué" enterrado.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">conversation-analyzer</div>
-                <div class="phase-agent-desc">Extrae requisitos de conversaciones, issues y tickets. Convierte lenguaje informal en especificación.</div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills de investigación externa — sin agente dedicado</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">deep-research</span>
+                <span class="skill-chip">market-research</span>
+                <span class="skill-chip">competitive-analysis</span>
+                <span class="skill-chip">knowledge-ops</span>
+                <span class="skill-chip">iterative-retrieval</span>
+                <span class="skill-chip">exa-search</span>
               </div>
             </div>
+
             <div class="phase-note">
               <strong>La fase más infravalorada.</strong> Actuar sin discovery es la causa número uno de trabajo rehecho. <strong>spec-miner</strong> es especialmente potente en codebases legacy: extrae lo que el sistema realmente hace, que puede diferir mucho del README.
             </div>
@@ -1194,36 +1426,137 @@
 
           <!-- ── PANEL: ARQUITECTURA ── -->
           <div class="phase-panel" id="phase-arquitectura">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">architect</div>
-                <div class="phase-agent-desc">Decisiones de diseño de sistema de alto nivel: componentes, límites, trade-offs.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Diseño de Sistema</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">architect</span>
+                      <span class="domain-agent-chip">code-architect</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">system-design</span>
+                      <span class="skill-chip">architecture-patterns</span>
+                      <span class="skill-chip">design-tradeoffs</span>
+                      <span class="skill-chip">module-boundaries</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">code-architect</div>
-                <div class="phase-agent-desc">Estructura interna del código: módulos, capas, patrones de diseño, separación de responsabilidades.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Tipos y Datos</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">type-design-analyzer</span>
+                      <span class="domain-agent-chip">database-reviewer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">type-design</span>
+                      <span class="skill-chip">schema-design</span>
+                      <span class="skill-chip">database-patterns</span>
+                      <span class="skill-chip">index-strategy</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">type-design-analyzer</div>
-                <div class="phase-agent-desc">Analiza y diseña el sistema de tipos. Crítico en TypeScript, Rust, F# donde los tipos son arquitectura.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Accesibilidad</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">a11y-architect</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">wcag-compliance</span>
+                      <span class="skill-chip">a11y-patterns</span>
+                      <span class="skill-chip">semantic-html</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">database-reviewer</div>
-                <div class="phase-agent-desc">Esquema de datos, relaciones, índices e integridad. Se revisa en diseño, no en producción.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Homelab e Infraestructura</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">homelab-architect</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">homelab-setup</span>
+                      <span class="skill-chip">self-hosted-services</span>
+                      <span class="skill-chip">infrastructure-planning</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">a11y-architect</div>
-                <div class="phase-agent-desc">Arquitectura de accesibilidad. Se decide aquí, en diseño — retrofitting es 10x más caro.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Red y Conectividad</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">network-architect</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">network-design</span>
+                      <span class="skill-chip">protocol-selection</span>
+                      <span class="skill-chip">network-segmentation</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">homelab-architect</div>
-                <div class="phase-agent-desc">Diseño de infraestructura self-hosted: servidores propios, networking local, servicios internos.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">network-architect</div>
-                <div class="phase-agent-desc">Topología de red, protocolos, segmentación y diseño de conectividad del sistema.</div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills sin agente dedicado — candidatos a nuevos agentes</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">api-design</span>
+                <span class="skill-chip">design-system</span>
               </div>
             </div>
+
             <div class="phase-note">
               <strong>Distinción entre architect y code-architect:</strong> <strong>architect</strong> decide qué servicios existen y cómo se comunican. <strong>code-architect</strong> decide cómo está organizado el código dentro de cada servicio.
             </div>
@@ -1231,12 +1564,43 @@
 
           <!-- ── PANEL: IMPLEMENTACIÓN ── -->
           <div class="phase-panel" id="phase-implementacion">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">tdd-guide</div>
-                <div class="phase-agent-desc">Guía el ciclo red-green-refactor. Escribe el test primero, implementa lo mínimo, refactoriza sin romper.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Ciclo TDD</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">tdd-guide</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">tdd-cycle</span>
+                      <span class="skill-chip">red-green-refactor</span>
+                      <span class="skill-chip">test-first-development</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills de flujo de trabajo — ejecutadas por el modelo general</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">git-workflow</span>
+                <span class="skill-chip">github-ops</span>
+                <span class="skill-chip">commit-conventions</span>
+                <span class="skill-chip">branch-strategy</span>
               </div>
             </div>
+
             <div class="phase-note">
               Solo un agente aquí, pero es deliberado: <strong>la implementación la hace el modelo directamente</strong>, guiado por tdd-guide. El conocimiento específico de cómo implementar bien en cada lenguaje vive en los revisores de la fase 04 — que actúan como guías durante la escritura, no solo como revisores post-hoc.
             </div>
@@ -1245,180 +1609,658 @@
           <!-- ── PANEL: LENGUAJE ── -->
           <div class="phase-panel" id="phase-lenguaje">
 
-            <div class="phase-group">
-              <div class="phase-group-header">
-                <span class="phase-group-title">Revisores de Código</span>
-                <span class="phase-group-pill blue">18 agentes — antes del merge</span>
+            <!-- Subgrupo: Web Backend -->
+            <div class="phase-subgroup">
+              <div class="phase-subgroup-label">Web Backend</div>
+              <div class="domain-cards-grid">
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Python</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">python-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">python-patterns</span>
+                        <span class="skill-chip">python-type-hints</span>
+                        <span class="skill-chip">python-async</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Django</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">django-reviewer</span>
+                        <span class="domain-agent-chip resolver">django-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills — cuarteto de framework</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">django-patterns</span>
+                        <span class="skill-chip">django-security</span>
+                        <span class="skill-chip">django-tdd</span>
+                        <span class="skill-chip">django-verification</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">FastAPI</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">fastapi-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">fastapi-patterns</span>
+                        <span class="skill-chip">fastapi-security</span>
+                        <span class="skill-chip">fastapi-testing</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Go</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">go-reviewer</span>
+                        <span class="domain-agent-chip resolver">go-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">go-patterns</span>
+                        <span class="skill-chip">go-concurrency</span>
+                        <span class="skill-chip">go-error-handling</span>
+                        <span class="skill-chip">go-testing</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Java / Spring Boot</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">java-reviewer</span>
+                        <span class="domain-agent-chip resolver">java-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills — cuarteto de framework</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">springboot-patterns</span>
+                        <span class="skill-chip">springboot-security</span>
+                        <span class="skill-chip">springboot-tdd</span>
+                        <span class="skill-chip">springboot-verification</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Quarkus</span>
+                    <span class="domain-card-meta">solo skills</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Skills — cuarteto de framework</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">quarkus-patterns</span>
+                        <span class="skill-chip">quarkus-security</span>
+                        <span class="skill-chip">quarkus-tdd</span>
+                        <span class="skill-chip">quarkus-verification</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">PHP / Laravel</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">php-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills — cuarteto de framework</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">laravel-patterns</span>
+                        <span class="skill-chip">laravel-security</span>
+                        <span class="skill-chip">laravel-tdd</span>
+                        <span class="skill-chip">laravel-verification</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
-              <div class="phase-agents-grid">
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">typescript-reviewer</div>
-                  <div class="phase-agent-desc">Idioms, tipos avanzados, narrowing y convenciones TypeScript.</div>
+            </div>
+
+            <!-- Subgrupo: Mobile -->
+            <div class="phase-subgroup">
+              <div class="phase-subgroup-label">Mobile</div>
+              <div class="domain-cards-grid">
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Kotlin / Android</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">kotlin-reviewer</span>
+                        <span class="domain-agent-chip resolver">kotlin-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">kotlin-patterns</span>
+                        <span class="skill-chip">coroutines-guide</span>
+                        <span class="skill-chip">android-patterns</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">python-reviewer</div>
-                  <div class="phase-agent-desc">PEP 8, pythonic patterns, type hints y convenciones del ecosistema.</div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Swift / iOS</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">swift-reviewer</span>
+                        <span class="domain-agent-chip resolver">swift-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">swift-patterns</span>
+                        <span class="skill-chip">swiftui-guide</span>
+                        <span class="skill-chip">ios-patterns</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">go-reviewer</div>
-                  <div class="phase-agent-desc">Concurrencia, interfaces implícitas, manejo de errores y patrones Go.</div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Flutter / Dart</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">flutter-reviewer</span>
+                        <span class="domain-agent-chip resolver">dart-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">flutter-patterns</span>
+                        <span class="skill-chip">dart-patterns</span>
+                        <span class="skill-chip">widget-testing</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">java-reviewer</div>
-                  <div class="phase-agent-desc">Patrones OOP, Spring conventions, generics y buenas prácticas Java moderno.</div>
+
+              </div>
+            </div>
+
+            <!-- Subgrupo: Frontend Web -->
+            <div class="phase-subgroup">
+              <div class="phase-subgroup-label">Frontend Web</div>
+              <div class="domain-cards-grid">
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">TypeScript</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">typescript-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">typescript-strict</span>
+                        <span class="skill-chip">typescript-patterns</span>
+                        <span class="skill-chip">type-narrowing</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">kotlin-reviewer</div>
-                  <div class="phase-agent-desc">Coroutines, extension functions, data classes y patrones Android/Kotlin.</div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">React</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">react-reviewer</span>
+                        <span class="domain-agent-chip resolver">react-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">react-patterns</span>
+                        <span class="skill-chip">hooks-guide</span>
+                        <span class="skill-chip">react-testing</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">rust-reviewer</div>
-                  <div class="phase-agent-desc">Ownership, lifetimes, borrow checker y seguridad de memoria sin GC.</div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Vue</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">vue-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">vue-patterns</span>
+                        <span class="skill-chip">composition-api</span>
+                        <span class="skill-chip">vue-testing</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">cpp-reviewer</div>
-                  <div class="phase-agent-desc">Core Guidelines, RAII, smart pointers y patrones C++ moderno.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">csharp-reviewer</div>
-                  <div class="phase-agent-desc">LINQ, async/await, nullable reference types y patrones .NET.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">fsharp-reviewer</div>
-                  <div class="phase-agent-desc">Programación funcional, discriminated unions y patrones F# en el ecosistema .NET.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">swift-reviewer</div>
-                  <div class="phase-agent-desc">Optionals, protocols, Swift concurrency y patrones iOS/macOS.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">flutter-reviewer</div>
-                  <div class="phase-agent-desc">Widget tree, gestión de estado y patrones Flutter/Dart para mobile.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">php-reviewer</div>
-                  <div class="phase-agent-desc">PSR standards, seguridad web y patrones PHP moderno (8.x).</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">react-reviewer</div>
-                  <div class="phase-agent-desc">Hooks, composición de componentes, gestión de efectos y patrones React.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">vue-reviewer</div>
-                  <div class="phase-agent-desc">Composition API, reactivity system y patrones Vue 3.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">django-reviewer</div>
-                  <div class="phase-agent-desc">ORM, class-based views, seguridad y patrones Django.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">fastapi-reviewer</div>
-                  <div class="phase-agent-desc">Pydantic models, dependency injection, async y patrones FastAPI.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">mle-reviewer</div>
-                  <div class="phase-agent-desc">Contratos de datos, pipelines ML, reproducibilidad y deployment de modelos.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">healthcare-reviewer</div>
-                  <div class="phase-agent-desc">Compliance HIPAA, manejo de datos de salud y patrones de seguridad en el sector sanitario.</div>
+
+              </div>
+
+              <div class="orphan-block" style="margin-top: 12px;">
+                <div class="orphan-label">Sin agente dedicado — Angular, Bun y otros</div>
+                <div class="orphan-skills">
+                  <span class="skill-chip">angular-patterns</span>
+                  <span class="skill-chip">bun-setup</span>
+                  <span class="skill-chip">js-patterns</span>
                 </div>
               </div>
             </div>
 
-            <div class="phase-group">
-              <div class="phase-group-header">
-                <span class="phase-group-title">Build Resolvers</span>
-                <span class="phase-group-pill red">12 agentes — cuando el CI falla</span>
+            <!-- Subgrupo: Lenguajes de Sistema -->
+            <div class="phase-subgroup">
+              <div class="phase-subgroup-label">Lenguajes de Sistema</div>
+              <div class="domain-cards-grid">
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Rust</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">rust-reviewer</span>
+                        <span class="domain-agent-chip resolver">rust-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">rust-patterns</span>
+                        <span class="skill-chip">rust-ownership</span>
+                        <span class="skill-chip">rust-safety</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">C++</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">cpp-reviewer</span>
+                        <span class="domain-agent-chip resolver">cpp-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">cpp-patterns</span>
+                        <span class="skill-chip">cpp-modern</span>
+                        <span class="skill-chip">cmake-guide</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">.NET / C#</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">csharp-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">dotnet-patterns</span>
+                        <span class="skill-chip">csharp-async</span>
+                        <span class="skill-chip">linq-guide</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">F#</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">fsharp-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">fsharp-patterns</span>
+                        <span class="skill-chip">functional-programming</span>
+                        <span class="skill-chip">discriminated-unions</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
-              <div class="phase-agents-grid">
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">build-error-resolver</div>
-                  <div class="phase-agent-desc">Diagnóstico y resolución de errores de build agnóstico de lenguaje. El generalista.</div>
+            </div>
+
+            <!-- Subgrupo: Especializado -->
+            <div class="phase-subgroup">
+              <div class="phase-subgroup-label">Especializado</div>
+              <div class="domain-cards-grid">
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">ML / PyTorch</span>
+                    <span class="domain-card-meta">revisor + resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">mle-reviewer</span>
+                        <span class="domain-agent-chip resolver">pytorch-build-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">ml-pipeline</span>
+                        <span class="skill-chip">pytorch-patterns</span>
+                        <span class="skill-chip">ml-reproducibility</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">react-build-resolver</div>
-                  <div class="phase-agent-desc">Errores de build Webpack/Vite, dependencias y configuración en proyectos React.</div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">Healthcare</span>
+                    <span class="domain-card-meta">revisor</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip">healthcare-reviewer</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">hipaa-compliance</span>
+                        <span class="skill-chip">health-data-security</span>
+                        <span class="skill-chip">hl7-fhir-patterns</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">go-build-resolver</div>
-                  <div class="phase-agent-desc">Errores de compilación Go, módulos y dependencias.</div>
+
+                <div class="domain-card">
+                  <div class="domain-card-header">
+                    <span class="domain-card-name">HarmonyOS</span>
+                    <span class="domain-card-meta">solo resolver</span>
+                  </div>
+                  <div class="domain-body">
+                    <div>
+                      <div class="domain-row-label">Agentes</div>
+                      <div class="domain-agents">
+                        <span class="domain-agent-chip resolver">harmonyos-app-resolver</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="domain-row-label">Skills</div>
+                      <div class="domain-skills">
+                        <span class="skill-chip">harmonyos-patterns</span>
+                        <span class="skill-chip">arkts-intro</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">java-build-resolver</div>
-                  <div class="phase-agent-desc">Errores Maven/Gradle, conflictos de dependencias y problemas de compilación Java.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">kotlin-build-resolver</div>
-                  <div class="phase-agent-desc">Errores Gradle y compilación Kotlin, incluyendo problemas de interop Java.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">rust-build-resolver</div>
-                  <div class="phase-agent-desc">Errores del borrow checker, cargo y problemas de lifetimes en compilación Rust.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">cpp-build-resolver</div>
-                  <div class="phase-agent-desc">Errores de compilación, linkado y CMake en proyectos C++.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">dart-build-resolver</div>
-                  <div class="phase-agent-desc">Errores de pub, Flutter build y problemas de plataforma Dart.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">django-build-resolver</div>
-                  <div class="phase-agent-desc">Errores de migrations, configuración WSGI y problemas de settings Django.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">swift-build-resolver</div>
-                  <div class="phase-agent-desc">Xcode build errors, Swift Package Manager y problemas de signing iOS.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">pytorch-build-resolver</div>
-                  <div class="phase-agent-desc">Errores de entorno CUDA, versiones de PyTorch y conflictos de dependencias ML.</div>
-                </div>
-                <div class="phase-agent-card">
-                  <div class="phase-agent-name">harmonyos-app-resolver</div>
-                  <div class="phase-agent-desc">Errores de build HarmonyOS y problemas de compilación ArkTS.</div>
-                </div>
+
+              </div>
+            </div>
+
+            <!-- Resolver generalista -->
+            <div class="orphan-block" style="margin-top: 4px;">
+              <div class="orphan-label">Resolver agnóstico — cuando el CI falla sin ecosistema específico</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">build-error-resolver</span>
               </div>
             </div>
 
             <div class="phase-note">
-              <strong>La simetría más reveladora del sistema:</strong> por cada lenguaje hay un revisor (antes del merge) y un resolver (cuando el CI falla). Son dos perspectivas del mismo dominio: la del que previene y la del que repara.
+              <strong>La simetría más reveladora del sistema:</strong> por cada lenguaje hay un revisor (antes del merge) y un resolver (cuando el CI falla). Son dos perspectivas del mismo dominio: la del que previene y la del que repara. <strong>Excepción notable:</strong> HarmonyOS solo tiene resolver — sin revisor aún, lo que señala una brecha en la cobertura del sistema.
             </div>
           </div>
 
           <!-- ── PANEL: CALIDAD ── -->
           <div class="phase-panel" id="phase-calidad">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">code-reviewer</div>
-                <div class="phase-agent-desc">Revisión de calidad general: legibilidad, mantenibilidad, convenciones y consistencia.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Calidad General</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">code-reviewer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">code-review</span>
+                      <span class="skill-chip">maintainability-check</span>
+                      <span class="skill-chip">convention-audit</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">security-reviewer</div>
-                <div class="phase-agent-desc">Vulnerabilidades, superficie de ataque, secretos expuestos y patrones inseguros.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Seguridad</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">security-reviewer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">security-audit</span>
+                      <span class="skill-chip">vulnerability-scan</span>
+                      <span class="skill-chip">secret-detection</span>
+                      <span class="skill-chip">owasp-check</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">performance-optimizer</div>
-                <div class="phase-agent-desc">Identifica y resuelve cuellos de botella. Profiling, algoritmos y uso de recursos.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Rendimiento</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">performance-optimizer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">performance-profiling</span>
+                      <span class="skill-chip">algorithm-optimization</span>
+                      <span class="skill-chip">resource-usage</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">code-simplifier</div>
-                <div class="phase-agent-desc">Reduce complejidad innecesaria y deuda cognitiva. Menos código = menos bugs.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Detección de Fallos</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">silent-failure-hunter</span>
+                      <span class="domain-agent-chip">pr-test-analyzer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">failure-analysis</span>
+                      <span class="skill-chip">test-quality-review</span>
+                      <span class="skill-chip">coverage-audit</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">refactor-cleaner</div>
-                <div class="phase-agent-desc">Limpieza estructural post-feature: naming, duplicados, acoplamiento y deuda técnica.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Limpieza y Simplificación</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">code-simplifier</span>
+                      <span class="domain-agent-chip">refactor-cleaner</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">complexity-reduction</span>
+                      <span class="skill-chip">dead-code-removal</span>
+                      <span class="skill-chip">naming-cleanup</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">silent-failure-hunter</div>
-                <div class="phase-agent-desc">Detecta fallos que no producen error visible. Los más peligrosos porque no te avisan.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">pr-test-analyzer</div>
-                <div class="phase-agent-desc">Evalúa cobertura y calidad de los propios tests de una PR. Testea los tests.</div>
-              </div>
+
             </div>
             <div class="phase-note">
               <strong>Distinciones importantes:</strong> <strong>code-reviewer</strong> revisa calidad general. <strong>code-simplifier</strong> reduce complejidad activamente. <strong>refactor-cleaner</strong> limpia deuda estructural. Tres agentes distintos porque tienen criterios de éxito distintos.
@@ -1427,12 +2269,43 @@
 
           <!-- ── PANEL: TESTING ── -->
           <div class="phase-panel" id="phase-testing">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">e2e-runner</div>
-                <div class="phase-agent-desc">Ejecuta tests de extremo a extremo del sistema completo. Valida el flujo real del usuario, no piezas aisladas.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Tests E2E</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">e2e-runner</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">e2e-testing</span>
+                      <span class="skill-chip">browser-qa</span>
+                      <span class="skill-chip">playwright-guide</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills de testing especializado — sin agente dedicado</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">visual-regression</span>
+                <span class="skill-chip">load-testing</span>
+                <span class="skill-chip">api-testing</span>
+                <span class="skill-chip">accessibility-testing</span>
               </div>
             </div>
+
             <div class="phase-note">
               Un solo agente aquí, pero es el que cierra el ciclo. Los tests unitarios e integración los cubre <strong>tdd-guide</strong> en la implementación. <strong>e2e-runner</strong> valida que el sistema completo funciona como lo usaría un usuario real.
             </div>
@@ -1440,12 +2313,43 @@
 
           <!-- ── PANEL: DOCS ── -->
           <div class="phase-panel" id="phase-docs">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">doc-updater</div>
-                <div class="phase-agent-desc">Actualiza documentación cuando cambia el código. Mantiene sincronizados el sistema y su descripción.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Documentación</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">doc-updater</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">architecture-decision-records</span>
+                      <span class="skill-chip">code-tour</span>
+                      <span class="skill-chip">documentation-lookup</span>
+                      <span class="skill-chip">frontend-slides</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills de documentación sin agente dedicado</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">changelog-writing</span>
+                <span class="skill-chip">api-docs-generation</span>
+                <span class="skill-chip">readme-update</span>
               </div>
             </div>
+
             <div class="phase-note">
               La documentación desactualizada es peor que no tener documentación. <strong>doc-updater</strong> resuelve el problema clásico de que el código evoluciona y los docs se quedan atrás — automatizando la sincronización como parte del propio ciclo de desarrollo.
             </div>
@@ -1453,20 +2357,46 @@
 
           <!-- ── PANEL: DISTRIBUCIÓN ── -->
           <div class="phase-panel" id="phase-distribucion">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">opensource-sanitizer</div>
-                <div class="phase-agent-desc">Limpia el código antes de publicarlo: elimina secretos, referencias internas y datos sensibles.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Open Source</span>
+                  <span class="domain-card-meta">3 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">opensource-sanitizer</span>
+                      <span class="domain-agent-chip">opensource-packager</span>
+                      <span class="domain-agent-chip">opensource-forker</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">generating-python-installer</span>
+                      <span class="skill-chip">package-publishing</span>
+                      <span class="skill-chip">release-notes</span>
+                      <span class="skill-chip">license-compliance</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">opensource-forker</div>
-                <div class="phase-agent-desc">Gestiona el proceso de fork de proyectos de código abierto: adaptación, upstream sync y contribuciones.</div>
-              </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">opensource-packager</div>
-                <div class="phase-agent-desc">Empaqueta para distribución pública: npm, pip, gem, cargo. Prepara el artefacto final.</div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills de registro de paquetes — sin agente dedicado</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">npm-publishing</span>
+                <span class="skill-chip">pip-publishing</span>
+                <span class="skill-chip">homebrew-formula</span>
+                <span class="skill-chip">cargo-publishing</span>
               </div>
             </div>
+
             <div class="phase-note">
               El orden importa: primero <strong>sanitizer</strong> (limpiar), luego <strong>packager</strong> (empaquetar). Publicar sin sanitizar es uno de los errores de seguridad más comunes en proyectos que pasan de privado a público.
             </div>
@@ -1474,24 +2404,91 @@
 
           <!-- ── PANEL: GROWTH ── -->
           <div class="phase-panel" id="phase-growth">
-            <div class="phase-agents-grid">
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">marketing-agent</div>
-                <div class="phase-agent-desc">Materiales y estrategia de marketing del producto. Traduce capacidades técnicas a propuesta de valor.</div>
+            <div class="domain-cards-grid">
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Contenido y Marca</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">marketing-agent</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">content-strategy</span>
+                      <span class="skill-chip">brand-voice</span>
+                      <span class="skill-chip">messaging-framework</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">seo-specialist</div>
-                <div class="phase-agent-desc">Optimización para motores de búsqueda: keywords, estructura de contenido y visibilidad orgánica.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">SEO</span>
+                  <span class="domain-card-meta">1 agente</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">seo-specialist</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">keyword-research</span>
+                      <span class="skill-chip">technical-seo</span>
+                      <span class="skill-chip">content-optimization</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">network-troubleshooter</div>
-                <div class="phase-agent-desc">Diagnóstico de problemas de red en producción: latencia, conectividad, DNS y routing.</div>
+
+              <div class="domain-card">
+                <div class="domain-card-header">
+                  <span class="domain-card-name">Operaciones de Red</span>
+                  <span class="domain-card-meta">2 agentes</span>
+                </div>
+                <div class="domain-body">
+                  <div>
+                    <div class="domain-row-label">Agentes</div>
+                    <div class="domain-agents">
+                      <span class="domain-agent-chip">network-troubleshooter</span>
+                      <span class="domain-agent-chip">network-config-reviewer</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="domain-row-label">Skills</div>
+                    <div class="domain-skills">
+                      <span class="skill-chip">network-diagnostics</span>
+                      <span class="skill-chip">firewall-config</span>
+                      <span class="skill-chip">load-balancer-setup</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="phase-agent-card">
-                <div class="phase-agent-name">network-config-reviewer</div>
-                <div class="phase-agent-desc">Revisión de configuración de red: firewalls, balanceadores, proxies y segmentación.</div>
+
+            </div>
+
+            <div class="orphan-block" style="margin-top: 16px;">
+              <div class="orphan-label">Skills de negocio y tracción — sin agente dedicado</div>
+              <div class="orphan-skills">
+                <span class="skill-chip">investor-materials</span>
+                <span class="skill-chip">investor-outreach</span>
+                <span class="skill-chip">product-capability</span>
+                <span class="skill-chip">market-research</span>
+                <span class="skill-chip">competitive-analysis</span>
               </div>
             </div>
+
             <div class="phase-note">
               La fase más heterogénea: combina go-to-market (<strong>marketing-agent</strong>, <strong>seo-specialist</strong>) con operaciones de producción (<strong>network-troubleshooter</strong>, <strong>network-config-reviewer</strong>). Lo que tienen en común: son actividades <em>post-lanzamiento</em>.
             </div>
