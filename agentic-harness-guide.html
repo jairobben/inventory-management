@@ -1047,6 +1047,195 @@
       .topbar { padding-left: 24px; padding-right: 24px; }
       .comparison { grid-template-columns: 1fr; }
     }
+
+    /* ── AGENT DRAWER ── */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .agent-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 480px;
+      max-width: 92vw;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      box-shadow: -24px 0 48px rgba(0,0,0,0.5);
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
+    .agent-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 12px;
+    }
+
+    .drawer-agent-name {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(88,166,255,0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+    }
+    .drawer-agent-name.resolver {
+      color: var(--red);
+      background: var(--red-dim);
+      border-color: rgba(248,81,73,0.3);
+    }
+
+    .drawer-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .drawer-close:hover { border-color: var(--text-muted); color: var(--text); }
+
+    .drawer-phase-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      padding: 10px 24px 0;
+      flex-shrink: 0;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px 40px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .drawer-section {
+      margin-bottom: 24px;
+    }
+
+    .drawer-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .drawer-section p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .drawer-section p strong { color: var(--text); }
+
+    .drawer-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .drawer-trigger-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .drawer-trigger-list li {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding-left: 14px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .drawer-trigger-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .drawer-collab {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .drawer-coming-soon {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-dim);
+    }
+    .drawer-coming-soon-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 0.4;
+    }
+    .drawer-coming-soon p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .drawer-code-ref {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .drawer-code-ref .path { color: var(--accent); }
+    .drawer-code-ref .comment { color: var(--text-dim); }
+
+    /* Make chips clickable */
+    .domain-agent-chip {
+      cursor: pointer;
+    }
+    .domain-agent-chip:hover {
+      filter: brightness(1.15);
+    }
+
   </style>
 </head>
 <body>
@@ -3694,6 +3883,17 @@ Solo si pasan los 5 → DONE</code></pre>
   </main>
 </div>
 
+<!-- Agent Detail Drawer -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="agent-drawer" id="agentDrawer">
+  <div class="drawer-header">
+    <span class="drawer-agent-name" id="drawerAgentName">agent-name</span>
+    <button class="drawer-close" id="drawerClose" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="drawer-phase-tag" id="drawerPhaseTag">Fase</div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
 <!-- Scroll to top -->
 <div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
 
@@ -3737,6 +3937,1008 @@ Solo si pasan los 5 → DONE</code></pre>
       e.preventDefault();
       const target = document.querySelector(item.getAttribute('href'));
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ── AGENT DRAWER ──────────────────────────────────────────────
+
+  const AGENT_DATA = {
+    'chief-of-staff': {
+      phase: 'Meta — Orquestación',
+      isResolver: false,
+      rol: 'Director de orquesta del sistema multiagente. Recibe una tarea de alto nivel, la descompone en subtareas, decide qué agente ejecuta cada una y en qué orden, y sintetiza los resultados al final.',
+      cuando: [
+        'La tarea requiere trabajo de múltiples dominios (ej: refactor + tests + docs)',
+        'Hay dependencias entre subtareas que hay que ordenar',
+        'Se activa desde el hook SessionStart en sesiones complejas',
+        'Cuando loop-operator necesita un plan antes de iterar',
+      ],
+      skills: ['agent-orchestration', 'task-decomposition', 'work-distribution', 'context-handoff'],
+      colabora: ['planner', 'loop-operator', 'gan-planner'],
+      repo: 'agents/chief-of-staff/CLAUDE.md',
+      nota: 'Es el único agente que puede invocar a otros agentes. El resto son leaf nodes — ejecutan, no orquestan.',
+    },
+    'planner': {
+      phase: 'Meta — Orquestación',
+      isResolver: false,
+      rol: 'Divide tareas complejas en fases secuenciales antes de que empiece cualquier ejecución. Su output es un plan estructurado, no código.',
+      cuando: [
+        'La tarea tiene más de 3 pasos no triviales',
+        'Hay riesgo de scope creep o de empezar por lo incorrecto',
+        'chief-of-staff lo llama para estructurar el trabajo antes de distribuirlo',
+      ],
+      skills: ['task-decomposition', 'work-distribution'],
+      colabora: ['chief-of-staff', 'loop-operator'],
+      repo: 'agents/planner/CLAUDE.md',
+      nota: 'Planifica pero no ejecuta. Esa separación es deliberada: el que planifica no debe tener sesgo hacia lo que sabe ejecutar.',
+    },
+    'loop-operator': {
+      phase: 'Meta — Orquestación',
+      isResolver: false,
+      rol: 'Ejecuta bucles autónomos de larga duración sin intervención humana. Mantiene estado entre iteraciones y sabe cuándo el objetivo está cumplido.',
+      cuando: [
+        'Tareas que requieren múltiples rondas de prueba-error (ej: hacer pasar CI)',
+        'Procesos de autoaprendizaje que iteran hasta convergencia',
+        'Operaciones batch sobre múltiples archivos o módulos',
+      ],
+      skills: ['agent-orchestration', 'context-handoff'],
+      colabora: ['chief-of-staff', 'planner', 'agent-evaluator'],
+      repo: 'agents/loop-operator/CLAUDE.md',
+      nota: 'La diferencia con chief-of-staff: loop-operator itera sobre la misma tarea. chief-of-staff coordina tareas distintas en paralelo.',
+    },
+    'harness-optimizer': {
+      phase: 'Meta — Automejoría',
+      isResolver: false,
+      rol: 'Meta-agente que analiza el rendimiento del propio harness y propone mejoras: nuevos agentes que hacen falta, skills que hay que crear, hooks que optimizar.',
+      cuando: [
+        'Después de evaluar resultados con agent-evaluator',
+        'Cuando pass@k cae por debajo del umbral configurado',
+        'Periódicamente como parte del ciclo de mejora continua',
+      ],
+      skills: ['continuous-learning', 'pattern-extraction', 'instinct-scoring'],
+      colabora: ['agent-evaluator', 'gan-evaluator'],
+      repo: 'agents/harness-optimizer/CLAUDE.md',
+      nota: 'Es el agente más meta del sistema: su trabajo es mejorar el sistema en el que vive.',
+    },
+    'agent-evaluator': {
+      phase: 'Meta — Automejoría',
+      isResolver: false,
+      rol: 'Evalúa la calidad y efectividad de otros agentes. Mide con métricas pass@k y pass^k, detecta patrones de fallo y genera informes para harness-optimizer.',
+      cuando: [
+        'Después de un ciclo de ejecución para auditar resultados',
+        'Cuando se añade un nuevo agente al sistema',
+        'Para calcular métricas de mejora antes/después de cambios en el harness',
+      ],
+      skills: ['pass-k-metrics', 'agent-evaluation', 'continuous-learning'],
+      colabora: ['harness-optimizer', 'gan-evaluator'],
+      repo: 'agents/agent-evaluator/CLAUDE.md',
+      nota: 'pass@k mide si al menos 1 de k intentos tiene éxito. pass^k mide si TODOS los k intentos tienen éxito. Son métricas distintas para objetivos distintos.',
+    },
+    'gan-planner': {
+      phase: 'Meta — Ciclo GAN',
+      isResolver: false,
+      rol: 'El primero del ciclo adversarial. Genera hipótesis o planes que inmediatamente van a ser atacados por gan-evaluator. Diseña sabiendo que habrá crítica.',
+      cuando: [
+        'Decisiones de arquitectura con alta incertidumbre',
+        'Antes de adoptar una nueva tecnología o patrón',
+        'Cuando se necesita explorar el espacio de soluciones más allá del primer impulso',
+      ],
+      skills: ['adversarial-review', 'hypothesis-critique'],
+      colabora: ['gan-generator', 'gan-evaluator'],
+      repo: 'agents/gan-planner/CLAUDE.md',
+      nota: 'El nombre "GAN" es una analogía con las Generative Adversarial Networks: un generador y un discriminador que se mejoran mutuamente.',
+    },
+    'gan-generator': {
+      phase: 'Meta — Ciclo GAN',
+      isResolver: false,
+      rol: 'Genera soluciones concretas dentro del ciclo adversarial a partir del plan de gan-planner. Su output va directamente al gan-evaluator para ser criticado.',
+      cuando: [
+        'Segunda etapa del ciclo GAN, después de que gan-planner ha establecido el contexto',
+        'Implementación de la hipótesis más prometedora del plan',
+      ],
+      skills: ['adversarial-review'],
+      colabora: ['gan-planner', 'gan-evaluator'],
+      repo: 'agents/gan-generator/CLAUDE.md',
+      nota: 'No optimiza para "parecer correcto" — optimiza para sobrevivir la crítica de gan-evaluator.',
+    },
+    'gan-evaluator': {
+      phase: 'Meta — Ciclo GAN',
+      isResolver: false,
+      rol: 'El atacante del ciclo. Su trabajo explícito es encontrar fallos en lo que generó gan-generator. Si no encuentra fallos, el sistema converge. Si los encuentra, el ciclo itera.',
+      cuando: [
+        'Tercera etapa del ciclo GAN, después de gan-generator',
+        'Continúa iterando hasta que la solución pasa la crítica o se alcanza el máximo de rondas',
+      ],
+      skills: ['adversarial-review', 'hypothesis-critique'],
+      colabora: ['gan-planner', 'gan-generator', 'agent-evaluator'],
+      repo: 'agents/gan-evaluator/CLAUDE.md',
+      nota: 'El incentivo invertido es lo que hace útil el ciclo: gan-evaluator no busca aprobar, busca reprobar. Eso elimina el sesgo de confirmación.',
+    },
+    'code-explorer': {
+      phase: 'Discovery — Comprensión del Codebase',
+      isResolver: false,
+      rol: 'Explora la estructura del codebase antes de actuar: mapea módulos, identifica patrones, detecta puntos de entrada y dependencias clave.',
+      cuando: [
+        'Al inicio de cualquier tarea en un repo desconocido',
+        'Cuando hay que modificar código sin documentación',
+        'Para identificar el impacto de un cambio antes de hacerlo',
+      ],
+      skills: ['codebase-survey', 'dependency-mapping', 'architecture-discovery'],
+      colabora: ['spec-miner', 'comment-analyzer', 'architect'],
+      repo: 'agents/code-explorer/CLAUDE.md',
+      nota: 'Actúa antes que cualquier otro agente de implementación. Es el equivalente a leer el mapa antes de conducir.',
+    },
+    'spec-miner': {
+      phase: 'Discovery — Comprensión del Codebase',
+      isResolver: false,
+      rol: 'TDD inverso: en lugar de escribir specs para luego implementar, extrae specs del código que ya existe. Infiere el contrato implícito de cada función, módulo o API.',
+      cuando: [
+        'Repos legacy sin tests ni documentación',
+        'Antes de refactorizar: primero capturar qué hace el sistema, luego cambiar',
+        'Cuando hay discrepancia entre lo que dice el README y lo que hace el código',
+      ],
+      skills: ['spec-mining', 'codebase-survey'],
+      colabora: ['code-explorer', 'comment-analyzer', 'tdd-guide'],
+      repo: 'agents/spec-miner/CLAUDE.md',
+      nota: 'Su output son specs, no código. Esas specs luego puede usarlas tdd-guide para escribir tests que capturen el comportamiento actual antes de refactorizar.',
+    },
+    'comment-analyzer': {
+      phase: 'Discovery — Comprensión del Codebase',
+      isResolver: false,
+      rol: 'Lee los comentarios del código para inferir la intención original del autor: el "por qué" enterrado en TODOs, FIXMEs, comentarios inline y docstrings.',
+      cuando: [
+        'Código con lógica no obvia que tiene comentarios explicativos',
+        'Cuando hay que preservar la intención original al refactorizar',
+        'Para recuperar contexto de decisiones de diseño antiguas',
+      ],
+      skills: ['architecture-discovery'],
+      colabora: ['code-explorer', 'spec-miner'],
+      repo: 'agents/comment-analyzer/CLAUDE.md',
+      nota: 'Los comentarios son el canal de comunicación del pasado al futuro. Este agente los convierte en conocimiento estructurado.',
+    },
+    'docs-lookup': {
+      phase: 'Discovery — Requisitos y Contexto',
+      isResolver: false,
+      rol: 'Busca y recupera documentación existente relevante: READMEs, wikis, ADRs, tickets, Confluence, Notion. Aporta el contexto documental antes de actuar.',
+      cuando: [
+        'Al inicio de una tarea cuando existe documentación del proyecto',
+        'Para verificar si ya existe una decisión tomada antes de proponer una nueva',
+        'Cuando el agente de implementación necesita contexto de requisitos',
+      ],
+      skills: ['documentation-lookup', 'requirements-extraction'],
+      colabora: ['conversation-analyzer', 'code-explorer'],
+      repo: 'agents/docs-lookup/CLAUDE.md',
+    },
+    'conversation-analyzer': {
+      phase: 'Discovery — Requisitos y Contexto',
+      isResolver: false,
+      rol: 'Extrae especificaciones formales de conversaciones informales: issues, Slack threads, emails, transcripciones de meetings. Convierte ruido en requisitos.',
+      cuando: [
+        'Cuando los requisitos están en conversaciones, no en documentos formales',
+        'Para construir specs a partir de issues de GitHub o comentarios de PR',
+        'En proyectos donde el conocimiento está en la cabeza del equipo, no escrito',
+      ],
+      skills: ['conversation-to-spec', 'requirements-extraction'],
+      colabora: ['docs-lookup', 'spec-miner'],
+      repo: 'agents/conversation-analyzer/CLAUDE.md',
+      nota: 'La mayoría de los proyectos reales tienen sus requisitos en Slack, no en Jira. Este agente cierra esa brecha.',
+    },
+    'architect': {
+      phase: 'Arquitectura — Diseño de Sistema',
+      isResolver: false,
+      rol: 'Decisiones de diseño de sistema de alto nivel: qué componentes existen, cómo se comunican entre sí, qué límites de dominio trazamos y qué trade-offs aceptamos.',
+      cuando: [
+        'Al diseñar un nuevo sistema o servicio desde cero',
+        'Cuando hay que tomar decisiones de integración entre sistemas',
+        'Ante trade-offs importantes (consistencia vs disponibilidad, sync vs async, etc.)',
+      ],
+      skills: ['system-design', 'architecture-patterns', 'design-tradeoffs'],
+      colabora: ['code-architect', 'type-design-analyzer', 'network-architect'],
+      repo: 'agents/architect/CLAUDE.md',
+      nota: 'architect decide qué servicios existen. code-architect decide cómo está organizado el código dentro de cada servicio. Son decisiones de distinto nivel.',
+    },
+    'code-architect': {
+      phase: 'Arquitectura — Diseño de Sistema',
+      isResolver: false,
+      rol: 'Estructura interna del código: módulos, capas, patrones de diseño, interfaces, inyección de dependencias. Trabaja a nivel de codebase, no de sistema.',
+      cuando: [
+        'Al estructurar un nuevo módulo o feature de tamaño considerable',
+        'Cuando el código empieza a acumular deuda de estructura (spaghetti)',
+        'Para definir las abstracciones correctas antes de implementar',
+      ],
+      skills: ['module-boundaries', 'architecture-patterns'],
+      colabora: ['architect', 'type-design-analyzer', 'refactor-cleaner'],
+      repo: 'agents/code-architect/CLAUDE.md',
+    },
+    'tdd-guide': {
+      phase: 'Implementación — Ciclo TDD',
+      isResolver: false,
+      rol: 'Guía el ciclo red-green-refactor: escribe el test primero (red), implementa lo mínimo para pasarlo (green), luego refactoriza sin romper nada (refactor).',
+      cuando: [
+        'Al implementar cualquier nueva funcionalidad',
+        'Para añadir cobertura a código existente sin tests',
+        'Cuando spec-miner ha extraído specs y hay que convertirlas en tests',
+      ],
+      skills: ['tdd-cycle', 'red-green-refactor', 'test-first-development'],
+      colabora: ['spec-miner', 'code-architect', 'pr-test-analyzer'],
+      repo: 'agents/tdd-guide/CLAUDE.md',
+      nota: 'La implementación concreta la hace el modelo directamente, guiado por este agente. tdd-guide no escribe código — establece el orden correcto para hacerlo.',
+    },
+    'python-reviewer': {
+      phase: 'Lenguaje — Web Backend / Python',
+      isResolver: false,
+      rol: 'Revisa código Python con criterios de idiomatic Python: PEP 8, type hints correctos, uso de dataclasses/pydantic, manejo de errores pythónico, y patrones del ecosistema.',
+      cuando: [
+        'Antes de mergear cualquier PR con código Python',
+        'Durante implementación como guía de buenas prácticas',
+        'Para detectar antipatrones (mutable defaults, bare excepts, etc.)',
+      ],
+      skills: ['python-patterns', 'python-type-hints', 'python-async'],
+      colabora: ['django-reviewer', 'fastapi-reviewer', 'security-reviewer'],
+      repo: 'agents/python-reviewer/CLAUDE.md',
+    },
+    'django-reviewer': {
+      phase: 'Lenguaje — Web Backend / Django',
+      isResolver: false,
+      rol: 'Revisa código Django: ORM queries (N+1, select_related), class-based views, seguridad (CSRF, XSS, SQL injection), migrations y patrones del framework.',
+      cuando: [
+        'En proyectos Django antes de cualquier merge',
+        'Específicamente para detectar problemas de ORM que no se ven hasta producción',
+        'Para validar que las migrations son seguras (backwards compatible)',
+      ],
+      skills: ['django-patterns', 'django-security', 'django-tdd', 'django-verification'],
+      colabora: ['python-reviewer', 'django-build-resolver', 'security-reviewer', 'database-reviewer'],
+      repo: 'agents/django-reviewer/CLAUDE.md',
+      nota: 'El cuarteto de skills (patterns, security, tdd, verification) es el patrón estándar para todos los frameworks principales en ECC.',
+    },
+    'django-build-resolver': {
+      phase: 'Lenguaje — Web Backend / Django',
+      isResolver: true,
+      rol: 'Resuelve errores de build en proyectos Django: migrations conflictivas, settings incorrectos, errores de WSGI/ASGI, conflictos de dependencias Python.',
+      cuando: [
+        'El CI falla en un proyecto Django',
+        'Errores de "No module named", conflictos de versiones, migrations que no aplican',
+        'Antes de un deploy cuando el entorno local difiere del de CI',
+      ],
+      skills: ['django-patterns', 'django-verification'],
+      colabora: ['django-reviewer', 'build-error-resolver'],
+      repo: 'agents/django-build-resolver/CLAUDE.md',
+    },
+    'fastapi-reviewer': {
+      phase: 'Lenguaje — Web Backend / FastAPI',
+      isResolver: false,
+      rol: 'Revisa código FastAPI: modelos Pydantic, dependency injection, async/await correcto, validación de inputs, documentación automática OpenAPI y patrones del framework.',
+      cuando: [
+        'En proyectos FastAPI antes de mergear',
+        'Para verificar que los modelos Pydantic cubren todos los casos edge',
+        'Para detectar bloqueos en código async (llamadas síncronas en contexto async)',
+      ],
+      skills: ['fastapi-patterns', 'fastapi-security', 'fastapi-testing'],
+      colabora: ['python-reviewer', 'security-reviewer'],
+      repo: 'agents/fastapi-reviewer/CLAUDE.md',
+    },
+    'go-reviewer': {
+      phase: 'Lenguaje — Web Backend / Go',
+      isResolver: false,
+      rol: 'Revisa código Go: concurrencia correcta (goroutines, channels, sync primitives), manejo explícito de errores, interfaces implícitas y patrones idiomáticos Go.',
+      cuando: [
+        'En proyectos Go antes de mergear',
+        'Para detectar race conditions y deadlocks',
+        'Para validar que el manejo de errores es exhaustivo (Go no tiene excepciones)',
+      ],
+      skills: ['go-patterns', 'go-concurrency', 'go-error-handling', 'go-testing'],
+      colabora: ['go-build-resolver', 'security-reviewer', 'performance-optimizer'],
+      repo: 'agents/go-reviewer/CLAUDE.md',
+    },
+    'go-build-resolver': {
+      phase: 'Lenguaje — Web Backend / Go',
+      isResolver: true,
+      rol: 'Resuelve errores de build Go: problemas de módulos (go.mod/go.sum), errores de compilación por tipos, dependencias circulares y conflictos de versiones.',
+      cuando: [
+        'El CI falla en un proyecto Go',
+        'Errores de "cannot use", "undefined", conflictos en go.mod',
+      ],
+      skills: ['go-patterns'],
+      colabora: ['go-reviewer', 'build-error-resolver'],
+      repo: 'agents/go-build-resolver/CLAUDE.md',
+    },
+    'java-reviewer': {
+      phase: 'Lenguaje — Web Backend / Java',
+      isResolver: false,
+      rol: 'Revisa código Java: patrones OOP, uso correcto de generics, Spring Boot conventions, inmutabilidad, y buenas prácticas de Java moderno (streams, optionals, records).',
+      cuando: [
+        'En proyectos Java/Spring Boot antes de mergear',
+        'Para detectar antipatrones (instanceof sin pattern matching, raw types, etc.)',
+        'Para validar arquitectura en capas de Spring',
+      ],
+      skills: ['springboot-patterns', 'springboot-security', 'springboot-tdd', 'springboot-verification'],
+      colabora: ['java-build-resolver', 'security-reviewer', 'database-reviewer'],
+      repo: 'agents/java-reviewer/CLAUDE.md',
+    },
+    'java-build-resolver': {
+      phase: 'Lenguaje — Web Backend / Java',
+      isResolver: true,
+      rol: 'Resuelve errores de build Maven/Gradle: conflictos de dependencias, problemas de classpath, errores de compilación y configuración del build system.',
+      cuando: [
+        'El CI falla en proyectos Java',
+        'Conflictos entre versiones de Spring Boot y sus starters',
+        'Errores de "cannot find symbol", classpath issues',
+      ],
+      skills: ['springboot-verification'],
+      colabora: ['java-reviewer', 'build-error-resolver'],
+      repo: 'agents/java-build-resolver/CLAUDE.md',
+    },
+    'kotlin-reviewer': {
+      phase: 'Lenguaje — Mobile / Kotlin',
+      isResolver: false,
+      rol: 'Revisa código Kotlin/Android: coroutines, extension functions, data classes, sealed classes y patrones de arquitectura Android (MVVM, Clean Architecture).',
+      cuando: [
+        'En proyectos Android/Kotlin antes de mergear',
+        'Para detectar mal uso de coroutines (blocking en main thread, scope incorrecto)',
+        'Para validar patrones de arquitectura Android',
+      ],
+      skills: ['kotlin-patterns', 'coroutines-guide', 'android-patterns'],
+      colabora: ['kotlin-build-resolver', 'security-reviewer'],
+      repo: 'agents/kotlin-reviewer/CLAUDE.md',
+    },
+    'kotlin-build-resolver': {
+      phase: 'Lenguaje — Mobile / Kotlin',
+      isResolver: true,
+      rol: 'Resuelve errores de build Gradle en proyectos Kotlin/Android: conflictos de versiones de Android Gradle Plugin, errores de interop Java/Kotlin, problemas de kapt.',
+      cuando: [
+        'El CI falla en un proyecto Android/Kotlin',
+        'Errores de "unresolved reference", conflictos de versiones de Compose',
+      ],
+      skills: ['kotlin-patterns'],
+      colabora: ['kotlin-reviewer', 'build-error-resolver'],
+      repo: 'agents/kotlin-build-resolver/CLAUDE.md',
+    },
+    'swift-reviewer': {
+      phase: 'Lenguaje — Mobile / Swift',
+      isResolver: false,
+      rol: 'Revisa código Swift/iOS: optionals, Swift concurrency (async/await, actors), protocols, SwiftUI patterns y guidelines del ecosistema Apple.',
+      cuando: [
+        'En proyectos iOS/macOS antes de mergear',
+        'Para detectar force unwraps, retain cycles, y mal uso de actors',
+        'Para validar que el código sigue las Human Interface Guidelines',
+      ],
+      skills: ['swift-patterns', 'swiftui-guide', 'ios-patterns'],
+      colabora: ['swift-build-resolver', 'security-reviewer'],
+      repo: 'agents/swift-reviewer/CLAUDE.md',
+    },
+    'swift-build-resolver': {
+      phase: 'Lenguaje — Mobile / Swift',
+      isResolver: true,
+      rol: 'Resuelve errores de build Xcode: Swift Package Manager, code signing, conflictos de targets, provisioning profiles y errores de compilación Swift.',
+      cuando: [
+        'El CI falla en un proyecto iOS/macOS',
+        'Errores de signing, "Missing entitlements", conflictos de Swift version',
+      ],
+      skills: ['swift-patterns'],
+      colabora: ['swift-reviewer', 'build-error-resolver'],
+      repo: 'agents/swift-build-resolver/CLAUDE.md',
+    },
+    'flutter-reviewer': {
+      phase: 'Lenguaje — Mobile / Flutter',
+      isResolver: false,
+      rol: 'Revisa código Flutter/Dart: widget tree correcta, gestión de estado (Bloc/Riverpod/Provider), performance (const constructors, Keys), y patrones Flutter.',
+      cuando: [
+        'En proyectos Flutter antes de mergear',
+        'Para detectar rebuilds innecesarios en el widget tree',
+        'Para validar gestión de estado y separación de lógica de UI',
+      ],
+      skills: ['flutter-patterns', 'dart-patterns', 'widget-testing'],
+      colabora: ['dart-build-resolver', 'security-reviewer'],
+      repo: 'agents/flutter-reviewer/CLAUDE.md',
+    },
+    'dart-build-resolver': {
+      phase: 'Lenguaje — Mobile / Flutter',
+      isResolver: true,
+      rol: 'Resuelve errores de build pub (gestor de paquetes Dart), Flutter build para iOS/Android/Web, y errores de plataforma específica.',
+      cuando: [
+        'El CI falla en un proyecto Flutter',
+        'Conflictos de versiones en pubspec.yaml, errores de "pub get"',
+      ],
+      skills: ['dart-patterns'],
+      colabora: ['flutter-reviewer', 'build-error-resolver'],
+      repo: 'agents/dart-build-resolver/CLAUDE.md',
+    },
+    'typescript-reviewer': {
+      phase: 'Lenguaje — Frontend Web / TypeScript',
+      isResolver: false,
+      rol: 'Revisa código TypeScript: tipos estrictos, narrowing correcto, uso de generics, discriminated unions, y convenciones del ecosistema TypeScript.',
+      cuando: [
+        'En cualquier proyecto TypeScript antes de mergear',
+        'Para detectar "any" implícitos, casts inseguros y tipos demasiado amplios',
+        'Para validar que el sistema de tipos realmente previene los errores que debería',
+      ],
+      skills: ['typescript-strict', 'typescript-patterns', 'type-narrowing'],
+      colabora: ['react-reviewer', 'vue-reviewer', 'security-reviewer'],
+      repo: 'agents/typescript-reviewer/CLAUDE.md',
+    },
+    'react-reviewer': {
+      phase: 'Lenguaje — Frontend Web / React',
+      isResolver: false,
+      rol: 'Revisa código React: uso correcto de hooks (deps arrays, stale closures), composición de componentes, gestión de efectos secundarios y patrones React modernos.',
+      cuando: [
+        'En proyectos React antes de mergear',
+        'Para detectar problemas de hooks (missing deps, efectos infinitos)',
+        'Para validar gestión de estado y performance (memoización innecesaria o ausente)',
+      ],
+      skills: ['react-patterns', 'hooks-guide', 'react-testing'],
+      colabora: ['react-build-resolver', 'typescript-reviewer', 'performance-optimizer'],
+      repo: 'agents/react-reviewer/CLAUDE.md',
+    },
+    'react-build-resolver': {
+      phase: 'Lenguaje — Frontend Web / React',
+      isResolver: true,
+      rol: 'Resuelve errores de build Webpack/Vite en proyectos React: conflictos de dependencias npm, errores de módulos, problemas de configuración de bundler.',
+      cuando: [
+        'El CI falla en un proyecto React',
+        'Errores de "Module not found", conflictos de peerDependencies',
+      ],
+      skills: ['react-patterns'],
+      colabora: ['react-reviewer', 'build-error-resolver'],
+      repo: 'agents/react-build-resolver/CLAUDE.md',
+    },
+    'vue-reviewer': {
+      phase: 'Lenguaje — Frontend Web / Vue',
+      isResolver: false,
+      rol: 'Revisa código Vue 3: Composition API, reactivity system (ref vs reactive), props/emits, composables y patrones del ecosistema Vue.',
+      cuando: [
+        'En proyectos Vue 3 antes de mergear',
+        'Para detectar mal uso del sistema de reactividad',
+        'Para validar patrones de composables y separación de lógica',
+      ],
+      skills: ['vue-patterns', 'composition-api', 'vue-testing'],
+      colabora: ['typescript-reviewer', 'performance-optimizer'],
+      repo: 'agents/vue-reviewer/CLAUDE.md',
+    },
+    'rust-reviewer': {
+      phase: 'Lenguaje — Sistema / Rust',
+      isResolver: false,
+      rol: 'Revisa código Rust: ownership, lifetimes, borrow checker, seguridad de memoria, uso correcto de unsafe, y patrones idiomáticos Rust.',
+      cuando: [
+        'En proyectos Rust antes de mergear',
+        'Para verificar que el uso de unsafe está justificado y es correcto',
+        'Para detectar clones innecesarios o lifetimes mal diseñados',
+      ],
+      skills: ['rust-patterns', 'rust-ownership', 'rust-safety'],
+      colabora: ['rust-build-resolver', 'security-reviewer', 'performance-optimizer'],
+      repo: 'agents/rust-reviewer/CLAUDE.md',
+    },
+    'rust-build-resolver': {
+      phase: 'Lenguaje — Sistema / Rust',
+      isResolver: true,
+      rol: 'Resuelve errores del compilador Rust: borrow checker, lifetime mismatches, cargo dependencies, errores de linkado y configuración de build.',
+      cuando: [
+        'El CI falla en un proyecto Rust',
+        'Errores del borrow checker, "cannot borrow", lifetime errors',
+      ],
+      skills: ['rust-patterns'],
+      colabora: ['rust-reviewer', 'build-error-resolver'],
+      repo: 'agents/rust-build-resolver/CLAUDE.md',
+      nota: 'Los errores del borrow checker de Rust son famosos por su dificultad. Este resolver los entiende estructuralmente, no solo los googlea.',
+    },
+    'cpp-reviewer': {
+      phase: 'Lenguaje — Sistema / C++',
+      isResolver: false,
+      rol: 'Revisa código C++: C++ Core Guidelines, RAII, smart pointers, templates, y evitar undefined behavior. Conoce C++ moderno (C++17/20).',
+      cuando: [
+        'En proyectos C++ antes de mergear',
+        'Para detectar memory leaks, dangling pointers, UB potencial',
+        'Para validar uso de smart pointers vs raw pointers',
+      ],
+      skills: ['cpp-patterns', 'cpp-modern', 'cmake-guide'],
+      colabora: ['cpp-build-resolver', 'security-reviewer', 'performance-optimizer'],
+      repo: 'agents/cpp-reviewer/CLAUDE.md',
+    },
+    'cpp-build-resolver': {
+      phase: 'Lenguaje — Sistema / C++',
+      isResolver: true,
+      rol: 'Resuelve errores de compilación C++: errores del linker, problemas de CMake, conflictos de headers, errores de template y configuración de toolchain.',
+      cuando: [
+        'El CI falla en un proyecto C++',
+        'Errores de linkado, "undefined reference", conflictos de include',
+      ],
+      skills: ['cmake-guide'],
+      colabora: ['cpp-reviewer', 'build-error-resolver'],
+      repo: 'agents/cpp-build-resolver/CLAUDE.md',
+    },
+    'csharp-reviewer': {
+      phase: 'Lenguaje — Sistema / .NET',
+      isResolver: false,
+      rol: 'Revisa código C#/.NET: LINQ, async/await, nullable reference types, records, pattern matching y patrones del ecosistema .NET moderno.',
+      cuando: [
+        'En proyectos .NET/C# antes de mergear',
+        'Para detectar async/await mal usado (deadlocks, .Result en código async)',
+        'Para validar uso correcto de nullable reference types',
+      ],
+      skills: ['dotnet-patterns', 'csharp-async', 'linq-guide'],
+      colabora: ['security-reviewer', 'performance-optimizer'],
+      repo: 'agents/csharp-reviewer/CLAUDE.md',
+    },
+    'fsharp-reviewer': {
+      phase: 'Lenguaje — Sistema / F#',
+      isResolver: false,
+      rol: 'Revisa código F#: programación funcional pura, discriminated unions, computation expressions, inmutabilidad y patrones del ecosistema .NET funcional.',
+      cuando: [
+        'En proyectos F# antes de mergear',
+        'Para validar que el código aprovecha el sistema de tipos para hacer ilegales los estados inválidos',
+        'Para detectar code paths no cubiertos en pattern matching',
+      ],
+      skills: ['fsharp-patterns', 'functional-programming', 'discriminated-unions'],
+      colabora: ['type-design-analyzer', 'security-reviewer'],
+      repo: 'agents/fsharp-reviewer/CLAUDE.md',
+      nota: 'F# es el lenguaje donde el principio "make illegal states unrepresentable" se aplica con más rigor. Este reviewer lo valida.',
+    },
+    'mle-reviewer': {
+      phase: 'Lenguaje — Especializado / ML',
+      isResolver: false,
+      rol: 'Revisa código de Machine Learning: contratos de datos (shapes, dtypes), pipelines reproducibles, gestión de experimentos, validación de modelos y deployment.',
+      cuando: [
+        'En proyectos de ML/DS antes de mergear',
+        'Para verificar que los pipelines son reproducibles (seeds, versioning de datos)',
+        'Para validar que los datos de test no se filtran al training',
+      ],
+      skills: ['ml-pipeline', 'pytorch-patterns', 'ml-reproducibility'],
+      colabora: ['pytorch-build-resolver', 'security-reviewer'],
+      repo: 'agents/mle-reviewer/CLAUDE.md',
+      nota: 'El mayor riesgo en ML no es el código roto (el CI lo detecta) sino la lógica silenciosamente incorrecta: data leakage, métricas sesgadas, modelos que pasan tests pero fallan en prod.',
+    },
+    'pytorch-build-resolver': {
+      phase: 'Lenguaje — Especializado / ML',
+      isResolver: true,
+      rol: 'Resuelve errores de entorno ML/PyTorch: versiones incompatibles de CUDA/cuDNN, conflictos de dependencias Python en entornos ML, errores de GPU memory.',
+      cuando: [
+        'El CI falla en un proyecto PyTorch/ML',
+        'Errores de CUDA out of memory, versión de CUDA incompatible con PyTorch',
+      ],
+      skills: ['ml-pipeline'],
+      colabora: ['mle-reviewer', 'build-error-resolver'],
+      repo: 'agents/pytorch-build-resolver/CLAUDE.md',
+    },
+    'healthcare-reviewer': {
+      phase: 'Lenguaje — Especializado / Healthcare',
+      isResolver: false,
+      rol: 'Revisa código en proyectos de salud: compliance HIPAA, manejo seguro de PHI, protocolos HL7/FHIR y patrones de seguridad específicos del sector sanitario.',
+      cuando: [
+        'En cualquier proyecto que maneje datos de salud o pacientes',
+        'Para verificar que los datos sensibles están correctamente anonimizados',
+        'Para validar compliance con regulaciones (HIPAA, GDPR en salud)',
+      ],
+      skills: ['hipaa-compliance', 'health-data-security', 'hl7-fhir-patterns'],
+      colabora: ['security-reviewer'],
+      repo: 'agents/healthcare-reviewer/CLAUDE.md',
+      nota: 'Un error de seguridad en healthcare no es solo un bug — puede tener consecuencias legales y éticas graves. Este reviewer existe porque el contexto de riesgo es diferente.',
+    },
+    'harmonyos-app-resolver': {
+      phase: 'Lenguaje — Especializado / HarmonyOS',
+      isResolver: true,
+      rol: 'Resuelve errores de build en aplicaciones HarmonyOS: compilación ArkTS, errores del toolchain de Huawei, y problemas específicos de la plataforma.',
+      cuando: [
+        'El CI falla en un proyecto HarmonyOS',
+        'Errores de compilación ArkTS o del sistema de módulos de HarmonyOS',
+      ],
+      skills: ['harmonyos-patterns', 'arkts-intro'],
+      colabora: ['build-error-resolver'],
+      repo: 'agents/harmonyos-app-resolver/CLAUDE.md',
+      nota: 'Único ecosistema en ECC con solo resolver pero sin reviewer — señal de que la cobertura de este dominio es incompleta.',
+    },
+    'code-reviewer': {
+      phase: 'Calidad — Calidad General',
+      isResolver: false,
+      rol: 'Revisión de calidad general de cualquier código: legibilidad, mantenibilidad, convenciones del proyecto, consistencia y deuda técnica acumulada.',
+      cuando: [
+        'En cualquier PR antes de mergear (agnóstico de lenguaje)',
+        'Cuando los revisores de lenguaje específico ya han pasado',
+        'Para el nivel de "¿es esto mantenible por alguien que no lo escribió?"',
+      ],
+      skills: ['code-review', 'maintainability-check', 'convention-audit'],
+      colabora: ['security-reviewer', 'code-simplifier', 'refactor-cleaner'],
+      repo: 'agents/code-reviewer/CLAUDE.md',
+    },
+    'security-reviewer': {
+      phase: 'Calidad — Seguridad',
+      isResolver: false,
+      rol: 'Revisa vulnerabilidades de seguridad: OWASP Top 10, secretos expuestos, superficie de ataque, inyecciones, autenticación/autorización débil y dependencias vulnerables.',
+      cuando: [
+        'En cualquier PR que modifique autenticación, autorización, o manejo de datos sensibles',
+        'Como parte del pipeline de CI para detección automática de vulnerabilidades',
+        'Antes de un release o de publicar código como open source',
+      ],
+      skills: ['security-audit', 'vulnerability-scan', 'secret-detection', 'owasp-check'],
+      colabora: ['code-reviewer', 'silent-failure-hunter'],
+      repo: 'agents/security-reviewer/CLAUDE.md',
+    },
+    'performance-optimizer': {
+      phase: 'Calidad — Rendimiento',
+      isResolver: false,
+      rol: 'Identifica y resuelve cuellos de botella de rendimiento: algoritmos ineficientes, N+1 queries, memoria desperdiciada, operaciones síncronas que deberían ser async.',
+      cuando: [
+        'Cuando hay problemas de rendimiento reportados en producción',
+        'Antes de un release cuando el rendimiento es crítico',
+        'En revisión de código cuando se detectan operaciones costosas',
+      ],
+      skills: ['performance-profiling', 'algorithm-optimization', 'resource-usage'],
+      colabora: ['code-reviewer', 'database-reviewer', 'silent-failure-hunter'],
+      repo: 'agents/performance-optimizer/CLAUDE.md',
+    },
+    'silent-failure-hunter': {
+      phase: 'Calidad — Detección de Fallos',
+      isResolver: false,
+      rol: 'Detecta fallos que no producen error visible: excepciones silenciadas, estados inconsistentes no detectados, condiciones de carrera que fallan raramente, y validaciones ausentes.',
+      cuando: [
+        'Cuando hay bugs en producción que no se replican en tests',
+        'En code review de código de alta criticidad',
+        'Para auditar bloques try/catch que podrían estar ocultando errores',
+      ],
+      skills: ['failure-analysis', 'coverage-audit'],
+      colabora: ['security-reviewer', 'pr-test-analyzer', 'performance-optimizer'],
+      repo: 'agents/silent-failure-hunter/CLAUDE.md',
+      nota: 'Los fallos silenciosos son los más peligrosos: el sistema parece funcionar pero la lógica es incorrecta. Este agente busca específicamente lo que no hace ruido.',
+    },
+    'pr-test-analyzer': {
+      phase: 'Calidad — Detección de Fallos',
+      isResolver: false,
+      rol: 'Evalúa la calidad de los tests de una PR: cobertura de casos edge, tests que prueban implementación en lugar de comportamiento, y tests que podrían dar falsos positivos.',
+      cuando: [
+        'En cualquier PR que incluya tests nuevos',
+        'Para detectar tests que siempre pasan independientemente del código',
+        'Para verificar que los tests prueban el contrato, no los detalles de implementación',
+      ],
+      skills: ['test-quality-review', 'coverage-audit'],
+      colabora: ['tdd-guide', 'silent-failure-hunter'],
+      repo: 'agents/pr-test-analyzer/CLAUDE.md',
+    },
+    'code-simplifier': {
+      phase: 'Calidad — Limpieza y Simplificación',
+      isResolver: false,
+      rol: 'Reduce complejidad innecesaria: abstrae código repetido, elimina sobreingeniería, simplifica lógica condicional compleja y reduce deuda cognitiva.',
+      cuando: [
+        'Después de un sprint de desarrollo acelerado',
+        'Cuando la complejidad ciclomática de un módulo es alta',
+        'Para revisar código funcional que es difícil de entender',
+      ],
+      skills: ['complexity-reduction', 'dead-code-removal'],
+      colabora: ['refactor-cleaner', 'code-reviewer'],
+      repo: 'agents/code-simplifier/CLAUDE.md',
+    },
+    'refactor-cleaner': {
+      phase: 'Calidad — Limpieza y Simplificación',
+      isResolver: false,
+      rol: 'Limpieza estructural post-feature: naming consistente, eliminación de duplicados, reducción de acoplamiento entre módulos y deuda técnica heredada.',
+      cuando: [
+        'Después de implementar una feature compleja',
+        'En sprints de deuda técnica',
+        'Cuando el equipo identifica que una parte del código es frágil',
+      ],
+      skills: ['complexity-reduction', 'dead-code-removal', 'naming-cleanup'],
+      colabora: ['code-simplifier', 'code-architect', 'code-reviewer'],
+      repo: 'agents/refactor-cleaner/CLAUDE.md',
+      nota: 'code-simplifier reduce complejidad activamente. refactor-cleaner limpia la estructura. Son objetivos distintos: simplificar ≠ limpiar.',
+    },
+    'e2e-runner': {
+      phase: 'Testing — Tests E2E',
+      isResolver: false,
+      rol: 'Ejecuta y mantiene tests de extremo a extremo que validan el sistema completo desde la perspectiva del usuario: flujos reales, no piezas aisladas.',
+      cuando: [
+        'Como última comprobación antes de mergear a main',
+        'En CI después de que pasan los tests unitarios e integración',
+        'Para validar que un cambio no rompe el flujo principal de usuario',
+      ],
+      skills: ['e2e-testing', 'browser-qa', 'playwright-guide'],
+      colabora: ['tdd-guide', 'pr-test-analyzer'],
+      repo: 'agents/e2e-runner/CLAUDE.md',
+      nota: 'Es el único test que simula lo que haría un usuario real. Los tests unitarios comprueban piezas. Los E2E comprueban que las piezas encajan correctamente.',
+    },
+    'doc-updater': {
+      phase: 'Docs — Documentación',
+      isResolver: false,
+      rol: 'Mantiene la documentación sincronizada con el código: actualiza READMEs, docstrings, ADRs y guías de uso cuando cambia la implementación.',
+      cuando: [
+        'Después de cualquier cambio que modifique APIs públicas o comportamiento',
+        'Como parte del pipeline de CI para detectar docs desactualizados',
+        'Antes de un release para asegurar que los docs reflejan la versión actual',
+      ],
+      skills: ['architecture-decision-records', 'code-tour', 'documentation-lookup', 'frontend-slides'],
+      colabora: ['code-explorer', 'spec-miner'],
+      repo: 'agents/doc-updater/CLAUDE.md',
+      nota: 'La documentación desactualizada es activamente dañina: lleva a asumir que el sistema funciona de una manera cuando funciona de otra.',
+    },
+    'opensource-sanitizer': {
+      phase: 'Distribución — Open Source',
+      isResolver: false,
+      rol: 'Prepara el código para publicación pública: elimina secretos hardcodeados, referencias a infraestructura interna, comentarios sensibles y datos de staging.',
+      cuando: [
+        'Antes de publicar un proyecto como open source',
+        'Al extraer una librería de un monorepo privado',
+        'Para auditar un repo antes de una demo o presentación pública',
+      ],
+      skills: ['package-publishing', 'license-compliance'],
+      colabora: ['security-reviewer', 'opensource-packager'],
+      repo: 'agents/opensource-sanitizer/CLAUDE.md',
+      nota: 'El paso más crítico en la publicación de código. Los secretos expuestos en git history pueden recuperarse incluso después de eliminarlos del código actual.',
+    },
+    'opensource-packager': {
+      phase: 'Distribución — Open Source',
+      isResolver: false,
+      rol: 'Prepara y publica paquetes en registros públicos: npm, PyPI, crates.io, Maven Central. Gestiona versioning, changelogs y metadatos del paquete.',
+      cuando: [
+        'Al hacer release de una nueva versión de una librería',
+        'Para configurar el pipeline de publicación automática por primera vez',
+      ],
+      skills: ['generating-python-installer', 'package-publishing', 'release-notes'],
+      colabora: ['opensource-sanitizer', 'opensource-forker'],
+      repo: 'agents/opensource-packager/CLAUDE.md',
+    },
+    'opensource-forker': {
+      phase: 'Distribución — Open Source',
+      isResolver: false,
+      rol: 'Gestiona el ciclo de vida de un fork: adaptar el proyecto al contexto propio, sincronizar con upstream y gestionar contribuciones de vuelta al proyecto original.',
+      cuando: [
+        'Al crear un fork personalizado de una librería open source',
+        'Para mantener un fork actualizado con los cambios de upstream',
+        'Para preparar contribuciones que vuelvan al proyecto original',
+      ],
+      skills: ['package-publishing'],
+      colabora: ['opensource-sanitizer', 'opensource-packager'],
+      repo: 'agents/opensource-forker/CLAUDE.md',
+    },
+    'marketing-agent': {
+      phase: 'Growth — Contenido y Marca',
+      isResolver: false,
+      rol: 'Crea materiales de marketing del producto: propuesta de valor, messaging, copy para landing pages, y traduce capacidades técnicas a lenguaje de negocio.',
+      cuando: [
+        'Al lanzar un nuevo producto o feature importante',
+        'Para crear materiales de comunicación externa',
+        'Cuando hay que explicar capacidades técnicas a audiencias no técnicas',
+      ],
+      skills: ['content-strategy', 'brand-voice', 'messaging-framework'],
+      colabora: ['seo-specialist'],
+      repo: 'agents/marketing-agent/CLAUDE.md',
+    },
+    'seo-specialist': {
+      phase: 'Growth — SEO',
+      isResolver: false,
+      rol: 'Optimiza el contenido y la estructura técnica para motores de búsqueda: keywords, meta tags, schema markup, velocidad de carga y arquitectura de URLs.',
+      cuando: [
+        'Al crear o actualizar landing pages y contenido público',
+        'Para auditar SEO técnico de un sitio existente',
+        'Cuando el tráfico orgánico es un canal importante',
+      ],
+      skills: ['keyword-research', 'technical-seo', 'content-optimization'],
+      colabora: ['marketing-agent'],
+      repo: 'agents/seo-specialist/CLAUDE.md',
+    },
+    'network-troubleshooter': {
+      phase: 'Growth — Operaciones de Red',
+      isResolver: false,
+      rol: 'Diagnostica problemas de red en producción: latencia alta, pérdidas de paquetes, problemas DNS, routing incorrecto y conectividad entre servicios.',
+      cuando: [
+        'Hay problemas de conectividad o latencia en producción',
+        'Timeout intermitentes entre servicios',
+        'Después de cambios de infraestructura que introducen problemas de red',
+      ],
+      skills: ['network-diagnostics', 'firewall-config'],
+      colabora: ['network-config-reviewer', 'network-architect'],
+      repo: 'agents/network-troubleshooter/CLAUDE.md',
+    },
+    'network-config-reviewer': {
+      phase: 'Growth — Operaciones de Red',
+      isResolver: false,
+      rol: 'Revisa configuraciones de red: firewalls, load balancers, proxies, VPNs, segmentación de red y reglas de seguridad.',
+      cuando: [
+        'Antes de aplicar cambios de configuración de red en producción',
+        'Para auditar la configuración de red existente en busca de vulnerabilidades',
+        'Al incorporar nuevos servicios a una red existente',
+      ],
+      skills: ['network-diagnostics', 'firewall-config', 'load-balancer-setup'],
+      colabora: ['network-troubleshooter', 'network-architect', 'security-reviewer'],
+      repo: 'agents/network-config-reviewer/CLAUDE.md',
+    },
+    'build-error-resolver': {
+      phase: 'Lenguaje — Resolver Generalista',
+      isResolver: true,
+      rol: 'Resolver agnóstico de lenguaje: diagnostica y soluciona errores de build cuando no hay un resolver específico para el ecosistema del proyecto.',
+      cuando: [
+        'El CI falla en un lenguaje sin resolver dedicado',
+        'Como fallback cuando el resolver específico no puede resolver el problema',
+        'En proyectos políglotas con múltiples lenguajes',
+      ],
+      skills: [],
+      colabora: ['django-build-resolver', 'go-build-resolver', 'java-build-resolver', 'rust-build-resolver'],
+      repo: 'agents/build-error-resolver/CLAUDE.md',
+      nota: 'Es el generalista del sistema. Cuando existe un resolver específico, siempre prefiere ese. Este entra cuando no hay otro.',
+    },
+    'type-design-analyzer': {
+      phase: 'Arquitectura — Tipos y Datos',
+      isResolver: false,
+      rol: 'Analiza y diseña el sistema de tipos de la aplicación. Especialmente crítico en TypeScript, Rust y F# donde los tipos son arquitectura: un tipo bien diseñado hace imposibles ciertos bugs.',
+      cuando: [
+        'Al diseñar las entidades de dominio y sus relaciones',
+        'Para validar que el sistema de tipos previene estados inválidos',
+        'Cuando hay demasiados casts o "any" en el código — señal de tipos mal diseñados',
+      ],
+      skills: ['type-design', 'schema-design'],
+      colabora: ['architect', 'database-reviewer', 'fsharp-reviewer'],
+      repo: 'agents/type-design-analyzer/CLAUDE.md',
+      nota: 'El principio que guía a este agente: "make illegal states unrepresentable". Si puedes representar un estado inválido en el tipo, el compilador no te va a proteger.',
+    },
+    'database-reviewer': {
+      phase: 'Arquitectura — Tipos y Datos',
+      isResolver: false,
+      rol: 'Revisa diseño de esquema de base de datos: normalización, índices, relaciones, integridad referencial y seguridad de datos. Se hace en diseño, no en producción.',
+      cuando: [
+        'Al diseñar o modificar el esquema de base de datos',
+        'En revisión de migrations antes de aplicarlas',
+        'Para identificar N+1 queries antes de que lleguen a producción',
+      ],
+      skills: ['database-patterns', 'schema-design', 'index-strategy'],
+      colabora: ['architect', 'type-design-analyzer', 'performance-optimizer'],
+      repo: 'agents/database-reviewer/CLAUDE.md',
+      nota: 'Los errores de esquema son los más caros de corregir — requieren migrations en producción con datos reales. Este reviewer existe para que los errores no lleguen hasta ese punto.',
+    },
+    'a11y-architect': {
+      phase: 'Arquitectura — Accesibilidad',
+      isResolver: false,
+      rol: 'Diseña la arquitectura de accesibilidad: estructura de heading, ARIA landmarks, gestión del foco, contraste de colores y navegación por teclado. Se decide en diseño, no al final.',
+      cuando: [
+        'Al diseñar nuevas interfaces de usuario',
+        'Para auditar accesibilidad de interfaces existentes',
+        'Antes de lanzar a producción cualquier UI pública',
+      ],
+      skills: ['wcag-compliance', 'a11y-patterns', 'semantic-html'],
+      colabora: ['architect', 'code-architect'],
+      repo: 'agents/a11y-architect/CLAUDE.md',
+      nota: 'Retrofitting accesibilidad es entre 5x y 10x más caro que diseñarla desde el principio. Este agente existe para que no haya que hacer retrofit.',
+    },
+    'homelab-architect': {
+      phase: 'Arquitectura — Homelab e Infraestructura',
+      isResolver: false,
+      rol: 'Diseña infraestructura self-hosted: servidores propios, VMs, contenedores, storage distribuido, networking local y servicios internos.',
+      cuando: [
+        'Al diseñar una infraestructura propia (no cloud)',
+        'Para planificar la migración de servicios cloud a self-hosted',
+        'En proyectos donde el control de datos es crítico',
+      ],
+      skills: ['homelab-setup', 'self-hosted-services', 'infrastructure-planning'],
+      colabora: ['network-architect', 'security-reviewer'],
+      repo: 'agents/homelab-architect/CLAUDE.md',
+    },
+    'network-architect': {
+      phase: 'Arquitectura — Red y Conectividad',
+      isResolver: false,
+      rol: 'Diseña la topología de red: qué protocolos usar, cómo segmentar la red, dónde poner firewalls, cómo gestionar el tráfico entre servicios.',
+      cuando: [
+        'Al diseñar la conectividad de un nuevo sistema',
+        'Para planificar la segmentación de red entre servicios',
+        'Ante decisiones de protocolo (gRPC vs REST vs WebSocket, etc.)',
+      ],
+      skills: ['network-design', 'protocol-selection', 'network-segmentation'],
+      colabora: ['architect', 'homelab-architect', 'network-troubleshooter'],
+      repo: 'agents/network-architect/CLAUDE.md',
+    },
+    'php-reviewer': {
+      phase: 'Lenguaje — Web Backend / PHP',
+      isResolver: false,
+      rol: 'Revisa código PHP/Laravel: PSR standards, seguridad web (XSS, CSRF, SQL injection), patrones de Laravel (Eloquent, Service Container, Facades) y PHP moderno (8.x).',
+      cuando: [
+        'En proyectos PHP/Laravel antes de mergear',
+        'Para detectar vulnerabilidades web clásicas en PHP',
+        'Para validar que el código sigue PSR-12 y convenciones Laravel',
+      ],
+      skills: ['laravel-patterns', 'laravel-security', 'laravel-tdd', 'laravel-verification'],
+      colabora: ['security-reviewer', 'database-reviewer'],
+      repo: 'agents/php-reviewer/CLAUDE.md',
+    },
+  };
+
+  // ── Drawer logic ──────────────────────────────────────────────
+
+  const drawer = document.getElementById('agentDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const drawerAgentName = document.getElementById('drawerAgentName');
+  const drawerPhaseTag = document.getElementById('drawerPhaseTag');
+  const drawerBody = document.getElementById('drawerBody');
+  const drawerClose = document.getElementById('drawerClose');
+
+  function openDrawer(agentKey) {
+    const data = AGENT_DATA[agentKey];
+    drawerAgentName.textContent = agentKey;
+    drawerAgentName.className = 'drawer-agent-name' + (data && data.isResolver ? ' resolver' : '');
+
+    if (data) {
+      drawerPhaseTag.textContent = data.phase;
+      drawerBody.innerHTML = buildDrawerContent(data);
+    } else {
+      drawerPhaseTag.textContent = 'Agente del sistema ECC';
+      drawerBody.innerHTML = buildComingSoon(agentKey);
+    }
+
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function buildDrawerContent(data) {
+    let html = '';
+
+    html += `<div class="drawer-section">
+      <div class="drawer-section-label">Rol</div>
+      <p>${data.rol}</p>
+    </div>`;
+
+    if (data.cuando && data.cuando.length) {
+      html += `<div class="drawer-section">
+        <div class="drawer-section-label">Cuándo se activa</div>
+        <ul class="drawer-trigger-list">
+          ${data.cuando.map(c => `<li>${c}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+
+    if (data.skills && data.skills.length) {
+      html += `<div class="drawer-section">
+        <div class="drawer-section-label">Skills asociadas</div>
+        <div class="drawer-chips">
+          ${data.skills.map(s => `<span class="skill-chip">${s}</span>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    if (data.colabora && data.colabora.length) {
+      html += `<div class="drawer-section">
+        <div class="drawer-section-label">Colabora con</div>
+        <div class="drawer-collab">
+          ${data.colabora.map(a => `<span class="domain-agent-chip" style="cursor:pointer" onclick="openDrawer('${a}')">${a}</span>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    if (data.nota) {
+      html += `<div class="drawer-section">
+        <div class="drawer-section-label">Nota de diseño</div>
+        <p><strong>${data.nota}</strong></p>
+      </div>`;
+    }
+
+    if (data.repo) {
+      html += `<div class="drawer-section">
+        <div class="drawer-section-label">Referencia en el repo</div>
+        <div class="drawer-code-ref">
+          <span class="path">${data.repo}</span><br>
+          <span class="comment">// Definición completa del agente en ECC</span>
+        </div>
+      </div>`;
+    }
+
+    return html;
+  }
+
+  function buildComingSoon(agentKey) {
+    return `<div class="drawer-coming-soon">
+      <div class="drawer-coming-soon-icon">◎</div>
+      <p>Análisis detallado de <strong>${agentKey}</strong> pendiente.<br>
+      Se añadirá en la próxima sesión leyendo su definición en el repo ECC.</p>
+    </div>`;
+  }
+
+  drawerClose.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+  // Attach click handlers to all agent chips
+  document.querySelectorAll('.domain-agent-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const agentKey = chip.textContent.trim();
+      openDrawer(agentKey);
     });
   });
 </script>
