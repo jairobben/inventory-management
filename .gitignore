@@ -52,3 +52,7 @@ logs/
 
 # Environment variables
 .env
+
+# Working materials for harness-engineering course analysis (not deliverables)
+harness-course/
+sandbox/
