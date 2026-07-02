@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Sessions — Dashboard</title>
+<style>
+  .viz-root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;   /* azul */
+    --series-2: #1baf7a;   /* aqua */
+    --series-3: #eda100;   /* amarillo */
+    --seq-100:#cde2fb; --seq-200:#9ec5f4; --seq-300:#6da7ec; --seq-400:#3987e5;
+    --seq-500:#256abf; --seq-600:#184f95; --seq-700:#0d366b;
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    .viz-root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #199e70;
+      --series-3: #c98500;
+      --delta-good: #0ca30c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body.viz-root {
+    margin: 0; background: var(--page); color: var(--text-primary);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+  h1 { font-size: 20px; font-weight: 650; margin: 0; }
+  .sub { color: var(--text-secondary); margin: 4px 0 0; font-size: 13px; }
+
+  .filters { display: flex; gap: 8px; align-items: center; margin: 20px 0 16px; }
+  .filters .label { color: var(--text-muted); font-size: 13px; margin-right: 4px; }
+  .filters button {
+    font: inherit; font-size: 13px; padding: 5px 12px; cursor: pointer;
+    background: var(--surface-1); color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  .filters button[aria-pressed="true"] {
+    color: var(--text-primary); font-weight: 650; border-color: var(--baseline);
+  }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+  }
+  .tile .label { color: var(--text-secondary); font-size: 13px; }
+  .tile .value { font-size: 26px; font-weight: 600; margin-top: 2px; }
+  .tile .note { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-top: 12px; min-width: 0;
+  }
+  .card h2 { font-size: 15px; font-weight: 650; margin: 0 0 2px; }
+  .card .desc { color: var(--text-muted); font-size: 12.5px; margin: 0 0 12px; }
+  svg text { font: 11.5px system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--text-muted); font-weight: 500;
+       border-bottom: 1px solid var(--grid); padding: 6px 8px; }
+  td { padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px;
+            margin-right: 7px; vertical-align: baseline; }
+  .pill { font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.18); padding: 8px 10px; font-size: 12.5px;
+    max-width: 260px;
+  }
+  #tooltip .t-title { color: var(--text-muted); margin-bottom: 3px; }
+  #tooltip .t-row { display: flex; gap: 8px; justify-content: space-between; }
+  #tooltip .t-val { font-weight: 650; }
+  .empty { color: var(--text-muted); padding: 24px 0; text-align: center; }
+</style>
+</head>
+<body class="viz-root">
+<div class="wrap">
+  <h1>Sesiones de Claude Code</h1>
+  <p class="sub" id="meta">Cargando…</p>
+
+  <div class="filters" role="group" aria-label="Rango de fechas">
+    <span class="label">Rango:</span>
+    <button data-days="7">7 días</button>
+    <button data-days="30" aria-pressed="true">30 días</button>
+    <button data-days="90">90 días</button>
+    <button data-days="0">Todo</button>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>Actividad diaria</h2>
+    <p class="desc">Llamadas a tools por día. Pasa el cursor para ver sesiones, prompts, tokens y coste del día.</p>
+    <div id="chart-daily"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Productividad por día de la semana</h2>
+      <p class="desc">Media de llamadas a tools por día activo.</p>
+      <div id="chart-weekday"></div>
+    </div>
+    <div class="card">
+      <h2>Uso de skills</h2>
+      <p class="desc">Invocaciones en el rango. Las skills instaladas sin uso aparecen al final.</p>
+      <div id="chart-skills"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Agentes (subagentes)</h2>
+    <p class="desc">Invocaciones, fallos devueltos al orquestador, errores internos de tools y consumo. La tasa de fallo es un indicador aproximado de qué agentes están rindiendo peor.</p>
+    <div id="table-agents"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Uso de tools</h2>
+      <p class="desc">Llamadas y tasa de error por tool en el rango.</p>
+      <div id="table-tools"></div>
+    </div>
+    <div class="card">
+      <h2>Tools por agente</h2>
+      <p class="desc">Qué usa cada agente dentro de sus sesiones (más oscuro = más llamadas).</p>
+      <div id="heatmap-agents"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Modelos y coste estimado</h2>
+    <p class="desc">Coste calculado con tarifas de API por token (con suscripción es orientativo, no facturado).</p>
+    <div id="table-models"></div>
+  </div>
+</div>
+<div id="tooltip" role="status"></div>
+
+<script>
+"use strict";
+const $ = (sel) => document.querySelector(sel);
+const css = (name) => getComputedStyle(document.body).getPropertyValue(name).trim();
+const fmt = new Intl.NumberFormat("es-ES");
+const fmtMoney = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+const compact = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + " M" : n >= 1e3 ? (n / 1e3).toFixed(1) + " K" : fmt.format(n);
+const DAY_NAMES = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+let DATA = null;
+let rangeDays = 30;
+
+// ---------- tooltip ----------
+const tip = $("#tooltip");
+function showTip(evt, title, rows) {
+  tip.textContent = "";
+  const t = document.createElement("div");
+  t.className = "t-title";
+  t.textContent = title;
+  tip.appendChild(t);
+  for (const [label, value] of rows) {
+    const r = document.createElement("div");
+    r.className = "t-row";
+    const l = document.createElement("span");
+    l.textContent = label;
+    const v = document.createElement("span");
+    v.className = "t-val";
+    v.textContent = value;
+    r.append(l, v);
+    tip.appendChild(r);
+  }
+  tip.style.display = "block";
+  moveTip(evt);
+}
+function moveTip(evt) {
+  const pad = 14;
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  const r = tip.getBoundingClientRect();
+  if (x + r.width > window.innerWidth - 8) x = evt.clientX - r.width - pad;
+  if (y + r.height > window.innerHeight - 8) y = evt.clientY - r.height - pad;
+  tip.style.left = x + "px";
+  tip.style.top = y + "px";
+}
+function hideTip() { tip.style.display = "none"; }
+
+// ---------- SVG helpers ----------
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs, parent) {
+  const node = document.createElementNS(NS, name);
+  for (const k in attrs) node.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(node);
+  return node;
+}
+function text(parent, x, y, str, attrs = {}) {
+  const t = el("text", { x, y, fill: css("--text-muted"), ...attrs }, parent);
+  t.textContent = str;
+  return t;
+}
+// Barra con extremo de datos redondeado (4px) y base recta.
+function roundedBarPath(x, y, w, h, r, dir) {
+  r = Math.min(r, dir === "up" ? h : w, w / 2, h / 2);
+  if (h <= 0 || w <= 0) return "";
+  if (dir === "up") {
+    return `M${x},${y + h} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h} Z`;
+  }
+  return `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h - r} Q${x + w},${y + h} ${x + w - r},${y + h} H${x} Z`;
+}
+function niceTicks(max, count = 4) {
+  if (max <= 0) return [0, 1];
+  const step = Math.pow(10, Math.floor(Math.log10(max / count)));
+  const mult = [1, 2, 2.5, 5, 10].find((m) => max / (step * m) <= count) || 10;
+  const s = step * mult;
+  const ticks = [];
+  for (let v = 0; v <= max + s * 0.001; v += s) ticks.push(Math.round(v * 100) / 100);
+  return ticks;
+}
+
+// ---------- filtrado ----------
+function filteredDays() {
+  const entries = Object.entries(DATA.days).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  if (!rangeDays) return entries;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - rangeDays + 1);
+  const key = cutoff.toISOString().slice(0, 10);
+  return entries.filter(([d]) => d >= key);
+}
+function sumBy(entries, field) {
+  return entries.reduce((acc, [, d]) => acc + (d[field] || 0), 0);
+}
+function mergeCounts(entries, field) {
+  const out = {};
+  for (const [, d] of entries)
+    for (const [k, v] of Object.entries(d[field] || {})) out[k] = (out[k] || 0) + v;
+  return out;
+}
+
+// ---------- KPIs ----------
+function renderKpis(entries) {
+  const box = $("#kpis");
+  box.textContent = "";
+  const sessions = sumBy(entries, "sessions");
+  const prompts = sumBy(entries, "prompts");
+  const calls = sumBy(entries, "tool_calls");
+  const errors = sumBy(entries, "errors");
+  const cost = entries.reduce((a, [, d]) => a + (d.cost_usd || 0), 0);
+  const tokens = sumBy(entries, "input_tokens") + sumBy(entries, "output_tokens");
+  const errRate = calls ? (errors / calls) * 100 : 0;
+  const tiles = [
+    ["Sesiones", fmt.format(sessions), null],
+    ["Prompts tuyos", fmt.format(prompts), null],
+    ["Llamadas a tools", fmt.format(calls), null],
+    ["Tokens (in+out)", compact(tokens), "sin contar caché"],
+    ["Errores de tools", fmt.format(errors), errRate.toFixed(1) + " % de las llamadas"],
+    ["Coste estimado", fmtMoney.format(cost), "tarifa API"],
+  ];
+  for (const [label, value, note] of tiles) {
+    const d = document.createElement("div");
+    d.className = "tile";
+    const l = document.createElement("div"); l.className = "label"; l.textContent = label;
+    const v = document.createElement("div"); v.className = "value"; v.textContent = value;
+    d.append(l, v);
+    if (note) { const n = document.createElement("div"); n.className = "note"; n.textContent = note; d.appendChild(n); }
+    box.appendChild(d);
+  }
+}
+
+// ---------- gráfico de columnas: actividad diaria ----------
+function renderDaily(entries) {
+  const host = $("#chart-daily");
+  host.textContent = "";
+  if (!entries.length) return empty(host);
+  const W = Math.min(host.clientWidth || 1100, 1140), H = 240;
+  const m = { t: 12, r: 8, b: 26, l: 44 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img",
+    "aria-label": "Llamadas a tools por día" }, host);
+  const max = Math.max(...entries.map(([, d]) => d.tool_calls), 1);
+  const ticks = niceTicks(max);
+  const yMax = ticks[ticks.length - 1];
+  const y = (v) => m.t + ih - (v / yMax) * ih;
+  for (const tk of ticks) {
+    el("line", { x1: m.l, x2: W - m.r, y1: y(tk), y2: y(tk), stroke: css("--grid"), "stroke-width": 1 }, svg);
+    text(svg, m.l - 6, y(tk) + 4, fmt.format(tk), { "text-anchor": "end", "font-variant-numeric": "tabular-nums" });
+  }
+  el("line", { x1: m.l, x2: W - m.r, y1: y(0), y2: y(0), stroke: css("--baseline"), "stroke-width": 1 }, svg);
+
+  const n = entries.length;
+  const band = iw / n;
+  const barW = Math.min(24, Math.max(2, band - 2)); // gap de 2px de superficie
+  const color = css("--series-1");
+  const labelEvery = Math.ceil(n / Math.floor(iw / 52));
+  entries.forEach(([dayKey, d], i) => {
+    const x = m.l + i * band + (band - barW) / 2;
+    const h = (d.tool_calls / yMax) * ih;
+    const bar = el("path", { d: roundedBarPath(x, y(d.tool_calls), barW, h, 4, "up"), fill: color }, svg);
+    // zona de impacto mayor que la marca
+    const hit = el("rect", { x: m.l + i * band, y: m.t, width: band, height: ih, fill: "transparent" }, svg);
+    const date = new Date(dayKey + "T12:00:00");
+    const title = date.toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" });
+    const rows = [
+      ["Llamadas a tools", fmt.format(d.tool_calls)],
+      ["Sesiones", fmt.format(d.sessions)],
+      ["Prompts", fmt.format(d.prompts)],
+      ["Errores", fmt.format(d.errors)],
+      ["Tokens in+out", compact(d.input_tokens + d.output_tokens)],
+      ["Coste est.", fmtMoney.format(d.cost_usd)],
+    ];
+    for (const target of [bar, hit]) {
+      target.addEventListener("pointerenter", (e) => { bar.setAttribute("opacity", "0.75"); showTip(e, title, rows); });
+      target.addEventListener("pointermove", moveTip);
+      target.addEventListener("pointerleave", () => { bar.removeAttribute("opacity"); hideTip(); });
+    }
+    if (i % labelEvery === 0) {
+      text(svg, m.l + i * band + band / 2, H - 8,
+        date.toLocaleDateString("es-ES", { day: "numeric", month: "short" }),
+        { "text-anchor": "middle" });
+    }
+  });
+}
+
+// ---------- barras horizontales genéricas ----------
+function hBarChart(host, items, { color = css("--series-1"), unit = "llamadas", flagged = new Set(), tipRows = null } = {}) {
+  host.textContent = "";
+  if (!items.length) return empty(host);
+  const W = Math.min(host.clientWidth || 520, 560);
+  const rowH = 30, labelW = 150, valueW = 56;
+  const H = items.length * rowH + 8;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img" }, host);
+  const max = Math.max(...items.map((it) => it.value), 1);
+  const iw = W - labelW - valueW - 10;
+  items.forEach((it, i) => {
+    const yTop = 4 + i * rowH;
+    const cy = yTop + rowH / 2;
+    const isFlag = flagged.has(it.label);
+    const t = text(svg, labelW - 8, cy + 4, it.label, {
+      "text-anchor": "end",
+      fill: isFlag ? css("--text-muted") : css("--text-secondary"),
+    });
+    if (isFlag) t.setAttribute("font-style", "italic");
+    el("line", { x1: labelW, x2: labelW, y1: yTop + 3, y2: yTop + rowH - 3, stroke: css("--baseline"), "stroke-width": 1 }, svg);
+    const w = (it.value / max) * iw;
+    const barH = Math.min(18, rowH - 8);
+    const bar = el("path", {
+      d: roundedBarPath(labelW, cy - barH / 2, Math.max(w, it.value > 0 ? 3 : 0), barH, 4, "right"),
+      fill: isFlag ? css("--grid") : color,
+    }, svg);
+    // valor en la punta de la barra (etiqueta directa)
+    text(svg, labelW + Math.max(w, it.value > 0 ? 3 : 0) + 6, cy + 4, fmt.format(it.value),
+      { fill: css("--text-primary"), "font-weight": 600, "font-variant-numeric": "tabular-nums" });
+    const hit = el("rect", { x: 0, y: yTop, width: W, height: rowH, fill: "transparent" }, svg);
+    const rows = tipRows ? tipRows(it) : [[unit, fmt.format(it.value)]];
+    for (const target of [bar, hit]) {
+      target.addEventListener("pointerenter", (e) => { bar.setAttribute("opacity", "0.75"); showTip(e, it.label, rows); });
+      target.addEventListener("pointermove", moveTip);
+      target.addEventListener("pointerleave", () => { bar.removeAttribute("opacity"); hideTip(); });
+    }
+  });
+}
+
+function empty(host) {
+  const d = document.createElement("div");
+  d.className = "empty";
+  d.textContent = "Sin datos en este rango.";
+  host.appendChild(d);
+}
+
+// ---------- día de la semana ----------
+function renderWeekday(entries) {
+  const totals = Array(7).fill(0), active = Array(7).fill(0);
+  for (const [dayKey, d] of entries) {
+    const wd = (new Date(dayKey + "T12:00:00").getDay() + 6) % 7; // 0 = lunes
+    totals[wd] += d.tool_calls;
+    if (d.sessions > 0) active[wd] += 1;
+  }
+  const items = DAY_NAMES.map((label, i) => ({
+    label,
+    value: active[i] ? Math.round(totals[i] / active[i]) : 0,
+    days: active[i],
+    total: totals[i],
+  }));
+  hBarChart($("#chart-weekday"), items, {
+    unit: "media de llamadas",
+    tipRows: (it) => [
+      ["Media por día activo", fmt.format(it.value)],
+      ["Días activos", fmt.format(it.days)],
+      ["Total llamadas", fmt.format(it.total)],
+    ],
+  });
+}
+
+// ---------- skills ----------
+function renderSkills(entries) {
+  const counts = mergeCounts(entries, "skills");
+  const items = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, value]) => ({ label, value }));
+  const used = new Set(Object.keys(counts));
+  const unused = (DATA.skills_installed || []).filter((s) => !used.has(s));
+  for (const s of unused) items.push({ label: s, value: 0 });
+  const flagged = new Set(unused);
+  hBarChart($("#chart-skills"), items, {
+    color: css("--series-2"),
+    unit: "invocaciones",
+    flagged,
+    tipRows: (it) => {
+      const rows = [["Invocaciones", fmt.format(it.value)]];
+      const last = DATA.skill_last_used[it.label];
+      rows.push(["Último uso", last || "nunca (en los transcripts)"]);
+      if (flagged.has(it.label)) rows.push(["Nota", "instalada, sin uso: candidata a retirar"]);
+      return rows;
+    },
+  });
+}
+
+// ---------- tabla de agentes ----------
+function statusPill(rate) {
+  // color de estado + icono + texto: nunca solo color
+  let color = css("--status-good"), icon = "●", label = "bien";
+  if (rate >= 25) { color = css("--status-critical"); icon = "✕"; label = "crítico"; }
+  else if (rate >= 10) { color = css("--status-serious"); icon = "▲"; label = "alto"; }
+  else if (rate >= 5) { color = css("--status-warning"); icon = "◆"; label = "medio"; }
+  const span = document.createElement("span");
+  span.className = "pill";
+  const ic = document.createElement("span");
+  ic.textContent = icon + " ";
+  ic.style.color = color;
+  const tx = document.createElement("span");
+  tx.textContent = `${rate.toFixed(1)} % (${label})`;
+  span.append(ic, tx);
+  return span;
+}
+
+function renderAgents() {
+  const host = $("#table-agents");
+  host.textContent = "";
+  const agents = Object.entries(DATA.agents || {});
+  if (!agents.length) return empty(host);
+  agents.sort((a, b) => b[1].invocations - a[1].invocations);
+  const table = document.createElement("table");
+  const head = table.createTHead().insertRow();
+  for (const [label, cls] of [["Agente", ""], ["Invocaciones", "num"], ["Fallos", "num"],
+    ["Tasa de fallo", "num"], ["Errores internos", "num"], ["Tool calls", "num"],
+    ["Tokens", "num"], ["Duración media", "num"]]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    if (cls) th.className = cls;
+    head.appendChild(th);
+  }
+  const body = table.createTBody();
+  const palette = ["--series-1", "--series-2", "--series-3", "--seq-600", "--status-serious"];
+  agents.forEach(([name, a], i) => {
+    const tr = body.insertRow();
+    const c0 = tr.insertCell();
+    const sw = document.createElement("span");
+    sw.className = "swatch";
+    sw.style.background = css(palette[i % palette.length]);
+    c0.append(sw, document.createTextNode(name));
+    const rate = a.invocations ? (a.failures / a.invocations) * 100 : 0;
+    const cells = [fmt.format(a.invocations), fmt.format(a.failures), null,
+      fmt.format(a.internal_errors), fmt.format(a.tool_calls), compact(a.tokens),
+      a.avg_duration_s != null ? (a.avg_duration_s >= 90 ? (a.avg_duration_s / 60).toFixed(1) + " min" : a.avg_duration_s + " s") : "—"];
+    let ci = 0;
+    for (const v of cells) {
+      const td = tr.insertCell();
+      td.className = "num";
+      if (v === null) td.appendChild(statusPill(rate));
+      else td.textContent = v;
+      ci++;
+    }
+  });
+  host.appendChild(table);
+}
+
+// ---------- tabla de tools ----------
+function renderTools(entries) {
+  const host = $("#table-tools");
+  host.textContent = "";
+  const counts = mergeCounts(entries, "tools");
+  const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return empty(host);
+  const globalErr = DATA.tools || {};
+  const table = document.createElement("table");
+  const head = table.createTHead().insertRow();
+  for (const [label, cls] of [["Tool", ""], ["Llamadas", "num"], ["Errores*", "num"], ["Tasa*", "num"]]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    if (cls) th.className = cls;
+    head.appendChild(th);
+  }
+  const body = table.createTBody();
+  const maxCalls = Math.max(...rows.map(([, v]) => v));
+  for (const [name, calls] of rows) {
+    const tr = body.insertRow();
+    const c0 = tr.insertCell();
+    const barBox = document.createElement("span");
+    barBox.className = "swatch";
+    barBox.style.width = Math.max(10, (calls / maxCalls) * 70) + "px";
+    barBox.style.background = css("--series-1");
+    c0.append(barBox, document.createTextNode(name));
+    tr.insertCell().textContent = fmt.format(calls);
+    tr.cells[1].className = "num";
+    const g = globalErr[name] || { calls: 0, errors: 0 };
+    tr.insertCell().textContent = fmt.format(g.errors);
+    tr.cells[2].className = "num";
+    const td = tr.insertCell();
+    td.className = "num";
+    td.appendChild(statusPill(g.calls ? (g.errors / g.calls) * 100 : 0));
+  }
+  host.appendChild(table);
+  const note = document.createElement("p");
+  note.className = "desc";
+  note.style.marginTop = "8px";
+  note.textContent = "* Errores acumulados en todo el histórico (los resultados de error no llevan fecha por tool en el rango).";
+  host.appendChild(note);
+}
+
+// ---------- heatmap agentes × tools ----------
+function renderHeatmap() {
+  const host = $("#heatmap-agents");
+  host.textContent = "";
+  const agents = Object.entries(DATA.agents || {}).filter(([, a]) => Object.keys(a.tools || {}).length);
+  if (!agents.length) return empty(host);
+  agents.sort((a, b) => b[1].tool_calls - a[1].tool_calls);
+  const toolTotals = {};
+  for (const [, a] of agents)
+    for (const [t, v] of Object.entries(a.tools)) toolTotals[t] = (toolTotals[t] || 0) + v;
+  const tools = Object.entries(toolTotals).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
+  const ramp = ["--seq-100", "--seq-200", "--seq-300", "--seq-400", "--seq-500", "--seq-600", "--seq-700"];
+  const max = Math.max(...agents.flatMap(([, a]) => tools.map((t) => a.tools[t] || 0)), 1);
+
+  const labelW = 130, cell = 44, cellH = 30, topH = 54;
+  const W = labelW + tools.length * cell + 8;
+  const H = topH + agents.length * cellH + 6;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img",
+    "aria-label": "Uso de tools por agente" }, host);
+  tools.forEach((t, j) => {
+    const tx = text(svg, labelW + j * cell + cell / 2, topH - 10, t, { "text-anchor": "end" });
+    tx.setAttribute("transform", `rotate(-35 ${labelW + j * cell + cell / 2} ${topH - 10})`);
+    tx.setAttribute("text-anchor", "start");
+  });
+  agents.forEach(([name, a], i) => {
+    const cy = topH + i * cellH + cellH / 2;
+    text(svg, labelW - 8, cy + 4, name.length > 16 ? name.slice(0, 15) + "…" : name,
+      { "text-anchor": "end", fill: css("--text-secondary") });
+    tools.forEach((t, j) => {
+      const v = a.tools[t] || 0;
+      const x = labelW + j * cell;
+      const idx = v === 0 ? -1 : Math.min(ramp.length - 1, Math.floor((v / max) * ramp.length));
+      const fill = idx < 0 ? css("--grid") : css(ramp[idx]);
+      const rect = el("rect", { x: x + 1, y: topH + i * cellH + 1, width: cell - 2, height: cellH - 2, rx: 4, fill }, svg);
+      if (v > 0) {
+        const dark = idx >= 3;
+        text(svg, x + cell / 2, cy + 4, fmt.format(v), {
+          "text-anchor": "middle", fill: dark ? "#ffffff" : css("--text-primary"),
+          "font-variant-numeric": "tabular-nums",
+        });
+      }
+      rect.addEventListener("pointerenter", (e) => showTip(e, `${name} · ${t}`, [["Llamadas", fmt.format(v)]]));
+      rect.addEventListener("pointermove", moveTip);
+      rect.addEventListener("pointerleave", hideTip);
+    });
+  });
+}
+
+// ---------- modelos ----------
+function renderModels() {
+  const host = $("#table-models");
+  host.textContent = "";
+  const models = Object.entries(DATA.models || {}).sort((a, b) => b[1].cost_usd - a[1].cost_usd);
+  if (!models.length) return empty(host);
+  const table = document.createElement("table");
+  const head = table.createTHead().insertRow();
+  for (const [label, cls] of [["Modelo", ""], ["Peticiones", "num"], ["Tokens entrada", "num"], ["Tokens salida", "num"], ["Coste est.", "num"]]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    if (cls) th.className = cls;
+    head.appendChild(th);
+  }
+  const body = table.createTBody();
+  for (const [name, m] of models) {
+    const tr = body.insertRow();
+    tr.insertCell().textContent = name;
+    for (const v of [fmt.format(m.requests), compact(m.input_tokens), compact(m.output_tokens), fmtMoney.format(m.cost_usd)]) {
+      const td = tr.insertCell();
+      td.className = "num";
+      td.textContent = v;
+    }
+  }
+  host.appendChild(table);
+}
+
+// ---------- orquestación ----------
+function renderAll() {
+  const entries = filteredDays();
+  renderKpis(entries);
+  renderDaily(entries);
+  renderWeekday(entries);
+  renderSkills(entries);
+  renderAgents();
+  renderTools(entries);
+  renderHeatmap();
+  renderModels();
+}
+
+document.querySelectorAll(".filters button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filters button").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    btn.setAttribute("aria-pressed", "true");
+    rangeDays = Number(btn.dataset.days);
+    renderAll();
+  });
+});
+
+async function load() {
+  const res = await fetch("/api/stats");
+  DATA = await res.json();
+  const nDays = Object.keys(DATA.days).length;
+  $("#meta").textContent =
+    `${DATA.transcript_files} transcripts · ${nDays} días con actividad · generado ${new Date(DATA.generated_at).toLocaleString("es-ES")}`;
+  renderAll();
+}
+load();
+window.addEventListener("resize", () => { if (DATA) renderAll(); });
+</script>
+</body>
+</html>
