@@ -1,0 +1,72 @@
+{
+  "project": "replace-with-project-name",
+  "last_updated": "YYYY-MM-DD",
+  "rules": {
+    "single_active_feature": true,
+    "passing_requires_evidence": true,
+    "do_not_skip_verification": true,
+    "only_orchestrator_edits_this_file": true
+  },
+  "status_legend": {
+    "not_started": "Work has not begun.",
+    "in_progress": "The feature is the current active task (at most one).",
+    "blocked": "Work cannot continue until a documented blocker is resolved.",
+    "passing": "Required verification has passed and evidence is recorded."
+  },
+  "features": [
+    {
+      "id": "api-001",
+      "priority": 1,
+      "area": "backend",
+      "phase": ".planning/phases/XX-replace-with-phase-slug",
+      "title": "Replace with the first backend behavior",
+      "user_visible_behavior": "Describe what a user or API client observes when this works.",
+      "status": "not_started",
+      "verification": [
+        "Run the backend test suite (pytest) and confirm the new tests pass.",
+        "Start the API locally and exercise the endpoint with a real request.",
+        "Confirm the response matches the documented contract."
+      ],
+      "evidence": [],
+      "assigned_subagent": null,
+      "dependencies": [],
+      "notes": ""
+    },
+    {
+      "id": "ui-001",
+      "priority": 2,
+      "area": "frontend",
+      "phase": ".planning/phases/XX-replace-with-phase-slug",
+      "title": "Replace with the first frontend behavior",
+      "user_visible_behavior": "Describe what the user sees in the browser when this works.",
+      "status": "not_started",
+      "verification": [
+        "Run the frontend test suite and confirm the new tests pass.",
+        "Run the production build and confirm it succeeds.",
+        "Load the affected view in the browser and confirm the behavior end to end."
+      ],
+      "evidence": [],
+      "assigned_subagent": null,
+      "dependencies": ["api-001"],
+      "notes": ""
+    },
+    {
+      "id": "infra-001",
+      "priority": 3,
+      "area": "deploy",
+      "phase": ".planning/phases/XX-replace-with-phase-slug",
+      "title": "Replace with the first deploy-surface change (Cloud Run config, CI, etc.)",
+      "user_visible_behavior": "Describe the observable effect (service reachable, revision healthy, env var applied).",
+      "status": "not_started",
+      "verification": [
+        "Validate the config with a dry run (no cloud mutation from a work session).",
+        "Confirm CI pipeline passes on the branch.",
+        "Record the exact command and output as evidence."
+      ],
+      "evidence": [],
+      "assigned_subagent": null,
+      "dependencies": [],
+      "notes": ""
+    }
+  ]
+}
